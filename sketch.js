@@ -2,17 +2,14 @@ let WIDTH
 let HEIGHT
 let DEPTH
 
-let NUM_BOIDS = 400
+let NUM_BOIDS = 1500
+let VEL_LIMIT = 10
 
 let DIST = 100
 let ANGLE = 120
-let VEL_LIMIT = 50
 let SEP_STEP = 0.1
 let ALI_STEP = 0.1
 let COH_STEP = 0.1
-let SEP_DIST = 100
-let ALI_DIST = 100
-let COH_DIST = 100
 
 let BG_COLOR = [0x07, 0x00, 0x0E]
 let AXIS_COLOR = [0xF0, 0x8B, 0x33]
@@ -27,9 +24,9 @@ function setup() {
   DEPTH = WIDTH + HEIGHT
   createCanvas(WIDTH, HEIGHT, WEBGL)
   angleMode(DEGREES)
-
-
   reset()
+
+  setInterval(function()  { console.log(frameRate()) }, 1000)
 }
 
 function reset() {
@@ -51,7 +48,7 @@ function draw() {
   pointLight(0xFF, 0xFF, 0xFF, -DEPTH/2, -HEIGHT/2, DEPTH/2)
 
   stroke(AXIS_COLOR)
-  strokeWeight(10)
+  strokeWeight(5)
   line(WIDTH/2, HEIGHT/2, -DEPTH/2, WIDTH/2, HEIGHT/2, DEPTH/2)
   line(WIDTH/2, -HEIGHT/2, -DEPTH/2, WIDTH/2, -HEIGHT/2, DEPTH/2)
   line(-WIDTH/2, HEIGHT/2, -DEPTH/2, -WIDTH/2, HEIGHT/2, DEPTH/2)
@@ -67,15 +64,24 @@ function draw() {
 
   prevBoids = [...currBoids].map(i => ({ ...i}))
 
+  let octree = new Octree(new Cuboid(new p5.Vector(0, 0, 0), new p5.Vector(WIDTH/2, HEIGHT/2, DEPTH/2)), 150)
+  octree.build(prevBoids)
+
   for (let boid of currBoids) {
-    boid.update(prevBoids)
+    let searchCuboid = new Cuboid(boid.position, new p5.Vector(DIST, DIST, DIST))
+    boid.update(octree.search(searchCuboid))
   }
+
+  // for (let boid of currBoids) {
+  //   boid.update(prevBoids)
+  // }
 }
 
 class Boid {
   constructor() {
     this.position = new p5.Vector(random(-WIDTH/2, WIDTH/2), random(-HEIGHT/2, HEIGHT/2), random(-DEPTH/2, DEPTH/2))
-    this.velocity = p5.Vector.mult(p5.Vector.random3D(), VEL_LIMIT)
+    this.velocity = p5.Vector.random3D()
+    this.velocity.setMag(VEL_LIMIT)
     this.color = BOID_COLOR
   }
 
@@ -97,7 +103,6 @@ class Boid {
   }
 
   __separate(neighbors) {
-    // let neighbors = this.__searchNeighbors(boids, SEP_DIST, ANGLE)
     let velocity = new p5.Vector(0, 0, 0)
 
     for (let neighbor of neighbors) {
@@ -108,7 +113,6 @@ class Boid {
   }
 
   __align(neighbors) {
-    // let neighbors = this.__searchNeighbors(boids, ALI_DIST, ANGLE)
     let velocity = this.velocity.copy()
 
     for (let neighbor of neighbors) {
@@ -121,7 +125,6 @@ class Boid {
   }
 
   __cohere(neighbors) {
-    // let neighbors = this.__searchNeighbors(boids, COH_DIST, ANGLE)
     let position = this.position.copy()
 
     for (let neighbor of neighbors) {
@@ -174,5 +177,156 @@ class Boid {
     noStroke()
     sphere(8)
     pop()
+  }
+}
+
+class Cuboid {
+  constructor(center, halfLength) {
+    this.x = center.x
+    this.y = center.y
+    this.z = center.z
+    this.w = halfLength.x
+    this.h = halfLength.y
+    this.d = halfLength.z
+  }
+
+  __isInRange(p, o, range) {
+    return (o - range <= p) && (p <= o + range)
+  }
+
+  isContainable(point) {
+    return (
+      this.__isInRange(point.x, this.x, this.w) &&
+      this.__isInRange(point.y, this.y, this.h) &&
+      this.__isInRange(point.z, this.z, this.d)
+    )
+  }
+
+  isOverlapped(other) {
+    return (
+      this.__isInRange(other.x - other.w, this.x, this.w) ||
+      this.__isInRange(other.x + other.w, this.x, this.w) ||
+      this.__isInRange(other.y - other.h, this.y, this.h) ||
+      this.__isInRange(other.y + other.h, this.y, this.h) ||
+      this.__isInRange(other.z - other.d, this.z, this.d) ||
+      this.__isInRange(other.z + other.d, this.z, this.d)
+    )
+  }
+}
+
+class OctreeNode {
+  constructor(cuboid, maxPoints) {
+    this.cuboid = cuboid
+    this.maxPoints = maxPoints
+    this.points = new Array()
+    this.isDivided = false
+    this.I    = undefined // (+, +, +)
+    this.II   = undefined // (-, +, +)
+    this.III  = undefined // (-, -, +)
+    this.IV   = undefined // (+, -, +)
+    this.V    = undefined // (+, +, -)
+    this.VI   = undefined // (-, +, -)
+    this.VII  = undefined // (-, -, -)
+    this.VIII = undefined // (+, -, -)
+  }
+
+  __branch() {
+    let V = p5.Vector
+    let x = this.cuboid.x
+    let y = this.cuboid.y
+    let z = this.cuboid.z
+    let hw = this.cuboid.w / 2
+    let hh = this.cuboid.h / 2
+    let hd = this.cuboid.d / 2
+
+    this.I    = new OctreeNode(new Cuboid(new V(x + hw, y + hh, z + hd), new V(hw, hh, hd)), this.maxPoints)
+    this.II   = new OctreeNode(new Cuboid(new V(x - hw, y + hh, z + hd), new V(hw, hh, hd)), this.maxPoints)
+    this.III  = new OctreeNode(new Cuboid(new V(x - hw, y - hh, z + hd), new V(hw, hh, hd)), this.maxPoints)
+    this.IV   = new OctreeNode(new Cuboid(new V(x + hw, y - hh, z + hd), new V(hw, hh, hd)), this.maxPoints)
+    this.V    = new OctreeNode(new Cuboid(new V(x + hw, y + hh, z - hd), new V(hw, hh, hd)), this.maxPoints)
+    this.VI   = new OctreeNode(new Cuboid(new V(x - hw, y + hh, z - hd), new V(hw, hh, hd)), this.maxPoints)
+    this.VII  = new OctreeNode(new Cuboid(new V(x - hw, y - hh, z - hd), new V(hw, hh, hd)), this.maxPoints)
+    this.VIII = new OctreeNode(new Cuboid(new V(x + hw, y - hh, z - hd), new V(hw, hh, hd)), this.maxPoints)
+
+    this.isDivided = true
+  }
+
+  insert(point) {
+    if (!this.cuboid.isContainable(point.position)) {
+      return false
+    }
+
+    if (this.points.length < this.maxPoints) {
+      this.points.push(point)
+    } else {
+      if (!this.isDivided) {
+        this.__branch()
+      }
+
+      if (this.I.insert(point)) {
+        return true
+      } else if (this.II.insert(point)) {
+        return true
+      } else if (this.III.insert(point)) {
+        return true
+      } else if (this.IV.insert(point)) {
+        return true
+      } else if (this.V.insert(point)) {
+        return true
+      } else if (this.VI.insert(point)) {
+        return true
+      } else if (this.VII.insert(point)) {
+        return true
+      } else if (this.VIII.insert(point)) {
+        return true
+      } else {
+        return false
+      }
+    }
+  }
+
+  search(searchCuboid, points) {
+    if (!points) {
+      points = new Array()
+    }
+
+    if (this.cuboid.isOverlapped(searchCuboid)) {
+      for (let point of this.points) {
+        if (searchCuboid.isContainable(point.position)) {
+          points.push(point)
+        }
+      }
+
+      if (this.isDivided) {
+        this.I.search(searchCuboid, points)
+        this.II.search(searchCuboid, points)
+        this.III.search(searchCuboid, points)
+        this.IV.search(searchCuboid, points)
+        this.V.search(searchCuboid, points)
+        this.VI.search(searchCuboid, points)
+        this.VII.search(searchCuboid, points)
+        this.VIII.search(searchCuboid, points)
+      }
+    } else {
+      return
+    }
+
+    return points
+  }
+}
+
+class Octree {
+  constructor(cuboid, maxPoints) {
+    this.root = new OctreeNode(cuboid, maxPoints || 25)
+  }
+
+  build(points) {
+    for (let point of points) {
+      this.root.insert(point)
+    }
+  }
+
+  search(cuboid) {
+    return this.root.search(cuboid)
   }
 }
