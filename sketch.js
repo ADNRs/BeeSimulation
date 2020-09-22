@@ -2,7 +2,7 @@ let WIDTH
 let HEIGHT
 let DEPTH
 
-let NUM_BOIDS = 1500
+let NUM_BOIDS = 1000
 let VEL_LIMIT = 10
 
 let DIST = 100
@@ -64,7 +64,7 @@ function draw() {
 
   prevBoids = [...currBoids].map(i => ({ ...i}))
 
-  let octree = new Octree(new Cuboid(new p5.Vector(0, 0, 0), new p5.Vector(WIDTH/2, HEIGHT/2, DEPTH/2)), 150)
+  let octree = new Octree(new Cuboid(new p5.Vector(0, 0, 0), new p5.Vector(WIDTH/2, HEIGHT/2, DEPTH/2)), 100)
   octree.build(prevBoids)
 
   for (let boid of currBoids) {
@@ -307,11 +307,9 @@ class OctreeNode {
         this.VII.search(searchCuboid, points)
         this.VIII.search(searchCuboid, points)
       }
-    } else {
-      return
-    }
 
-    return points
+      return points
+    }
   }
 }
 
