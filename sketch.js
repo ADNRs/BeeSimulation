@@ -71,10 +71,6 @@ function draw() {
     let searchCuboid = new Cuboid(boid.position, new p5.Vector(DIST, DIST, DIST))
     boid.update(octree.search(searchCuboid))
   }
-
-  // for (let boid of currBoids) {
-  //   boid.update(prevBoids)
-  // }
 }
 
 class Boid {
@@ -231,10 +227,10 @@ class OctreeNode {
   }
 
   __branch() {
-    let V = p5.Vector
-    let x = this.cuboid.x
-    let y = this.cuboid.y
-    let z = this.cuboid.z
+    let V  = p5.Vector
+    let x  = this.cuboid.x
+    let y  = this.cuboid.y
+    let z  = this.cuboid.z
     let hw = this.cuboid.w / 2
     let hh = this.cuboid.h / 2
     let hd = this.cuboid.d / 2
@@ -247,13 +243,11 @@ class OctreeNode {
     this.VI   = new OctreeNode(new Cuboid(new V(x - hw, y + hh, z - hd), new V(hw, hh, hd)), this.maxPoints)
     this.VII  = new OctreeNode(new Cuboid(new V(x - hw, y - hh, z - hd), new V(hw, hh, hd)), this.maxPoints)
     this.VIII = new OctreeNode(new Cuboid(new V(x + hw, y - hh, z - hd), new V(hw, hh, hd)), this.maxPoints)
-
-    this.isDivided = true
   }
 
   insert(point) {
     if (!this.cuboid.isContainable(point.position)) {
-      return false
+      return
     }
 
     if (this.points.length < this.maxPoints) {
@@ -261,54 +255,40 @@ class OctreeNode {
     } else {
       if (!this.isDivided) {
         this.__branch()
+        this.isDivided = true
       }
 
-      if (this.I.insert(point)) {
-        return true
-      } else if (this.II.insert(point)) {
-        return true
-      } else if (this.III.insert(point)) {
-        return true
-      } else if (this.IV.insert(point)) {
-        return true
-      } else if (this.V.insert(point)) {
-        return true
-      } else if (this.VI.insert(point)) {
-        return true
-      } else if (this.VII.insert(point)) {
-        return true
-      } else if (this.VIII.insert(point)) {
-        return true
-      } else {
-        return false
-      }
+      this.I.insert(point)
+      this.II.insert(point)
+      this.III.insert(point)
+      this.IV.insert(point)
+      this.V.insert(point)
+      this.VI.insert(point)
+      this.VII.insert(point)
+      this.VIII.insert(point)
     }
   }
 
   search(searchCuboid, points) {
-    if (!points) {
-      points = new Array()
+    if (!this.cuboid.isOverlapped(searchCuboid)) {
+      return
+    }
+    
+    for (let point of this.points) {
+      if (searchCuboid.isContainable(point.position)) {
+        points.push(point)
+      }
     }
 
-    if (this.cuboid.isOverlapped(searchCuboid)) {
-      for (let point of this.points) {
-        if (searchCuboid.isContainable(point.position)) {
-          points.push(point)
-        }
-      }
-
-      if (this.isDivided) {
-        this.I.search(searchCuboid, points)
-        this.II.search(searchCuboid, points)
-        this.III.search(searchCuboid, points)
-        this.IV.search(searchCuboid, points)
-        this.V.search(searchCuboid, points)
-        this.VI.search(searchCuboid, points)
-        this.VII.search(searchCuboid, points)
-        this.VIII.search(searchCuboid, points)
-      }
-
-      return points
+    if (this.isDivided) {
+      this.I.search(searchCuboid, points)
+      this.II.search(searchCuboid, points)
+      this.III.search(searchCuboid, points)
+      this.IV.search(searchCuboid, points)
+      this.V.search(searchCuboid, points)
+      this.VI.search(searchCuboid, points)
+      this.VII.search(searchCuboid, points)
+      this.VIII.search(searchCuboid, points)
     }
   }
 }
@@ -325,6 +305,8 @@ class Octree {
   }
 
   search(cuboid) {
-    return this.root.search(cuboid)
+    let points = new Array()
+    this.root.search(cuboid, points)
+    return points
   }
 }
