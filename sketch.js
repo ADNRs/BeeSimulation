@@ -81,7 +81,7 @@ class Boid {
     this.color = BOID_COLOR
   }
 
-  __searchNeighbors(boids) {
+  _searchNeighbors(boids) {
     let getPointsDist = function(p1, p2) { return p1.dist(p2) }
     let getVectorsAngle = function(v1, v2) { return acos(v1.dot(v2) / (v1.mag() * v2.mag())) }
 
@@ -98,7 +98,7 @@ class Boid {
     return neighbors
   }
 
-  __separate(neighbors) {
+  _separate(neighbors) {
     let velocity = new p5.Vector(0, 0, 0)
 
     for (let neighbor of neighbors) {
@@ -108,7 +108,7 @@ class Boid {
     return velocity
   }
 
-  __align(neighbors) {
+  _align(neighbors) {
     let velocity = this.velocity.copy()
 
     for (let neighbor of neighbors) {
@@ -120,7 +120,7 @@ class Boid {
     return velocity
   }
 
-  __cohere(neighbors) {
+  _cohere(neighbors) {
     let position = this.position.copy()
 
     for (let neighbor of neighbors) {
@@ -134,10 +134,10 @@ class Boid {
   }
 
   update(boids) {
-    let neighbors = this.__searchNeighbors(boids)
-    let vS = this.__separate(neighbors)
-    let vA = this.__align(neighbors)
-    let vC = this.__cohere(neighbors)
+    let neighbors = this._searchNeighbors(boids)
+    let vS = this._separate(neighbors)
+    let vA = this._align(neighbors)
+    let vC = this._cohere(neighbors)
     vS.setMag(VEL_LIMIT)
     vA.setMag(VEL_LIMIT)
     vC.setMag(VEL_LIMIT)
@@ -186,26 +186,26 @@ class Cuboid {
     this.d = halfLength.z
   }
 
-  __isInRange(p, o, range) {
+  _isInRange(p, o, range) {
     return (o - range <= p) && (p <= o + range)
   }
 
   isContainable(point) {
     return (
-      this.__isInRange(point.x, this.x, this.w) &&
-      this.__isInRange(point.y, this.y, this.h) &&
-      this.__isInRange(point.z, this.z, this.d)
+      this._isInRange(point.x, this.x, this.w) &&
+      this._isInRange(point.y, this.y, this.h) &&
+      this._isInRange(point.z, this.z, this.d)
     )
   }
 
   isOverlapped(other) {
     return (
-      this.__isInRange(other.x - other.w, this.x, this.w) ||
-      this.__isInRange(other.x + other.w, this.x, this.w) ||
-      this.__isInRange(other.y - other.h, this.y, this.h) ||
-      this.__isInRange(other.y + other.h, this.y, this.h) ||
-      this.__isInRange(other.z - other.d, this.z, this.d) ||
-      this.__isInRange(other.z + other.d, this.z, this.d)
+      this._isInRange(other.x - other.w, this.x, this.w) ||
+      this._isInRange(other.x + other.w, this.x, this.w) ||
+      this._isInRange(other.y - other.h, this.y, this.h) ||
+      this._isInRange(other.y + other.h, this.y, this.h) ||
+      this._isInRange(other.z - other.d, this.z, this.d) ||
+      this._isInRange(other.z + other.d, this.z, this.d)
     )
   }
 }
@@ -226,7 +226,7 @@ class OctreeNode {
     this.VIII = undefined // (+, -, -)
   }
 
-  __branch() {
+  _branch() {
     let V  = p5.Vector
     let x  = this.cuboid.x
     let y  = this.cuboid.y
@@ -254,7 +254,7 @@ class OctreeNode {
       this.points.push(point)
     } else {
       if (!this.isDivided) {
-        this.__branch()
+        this._branch()
         this.isDivided = true
       }
 
@@ -273,7 +273,7 @@ class OctreeNode {
     if (!this.cuboid.isOverlapped(searchCuboid)) {
       return
     }
-    
+
     for (let point of this.points) {
       if (searchCuboid.isContainable(point.position)) {
         points.push(point)
