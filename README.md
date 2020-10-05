@@ -3,7 +3,7 @@ Boids simulation in p5.js.
 
 ## Setup
 + web browser
- + Google Chrome is recommended.
+  + Google Chrome is recommended.
 + internet connection
 
 ## Usage
