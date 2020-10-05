@@ -21,7 +21,7 @@ Double click `index.html`, and you will see the whole simulation in your browser
   + https://p5js.org/reference/
 
 ## License
-This program shall only be used as an demonstration for homework 1 of CSE326, 2020 fall.
+This program shall only be used as a demonstration for homework 1 of CSE326, 2020 fall.
 
 ```
 Copyright © 2020 C.Y. Chen
