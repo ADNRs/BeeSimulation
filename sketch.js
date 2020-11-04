@@ -1,23 +1,3 @@
-let WIDTH
-let HEIGHT
-let DEPTH
-
-let NUM_BOIDS = 1000
-let VEL_LIMIT = 8 // limit of velocity
-
-let DIST = 100
-let ANGLE = 120
-let SEP_MULTIPLIER = 0.1
-let ALI_MULTIPLIER = 0.1
-let COH_MULTIPLIER = 0.1
-
-let BG_COLOR = [0x07, 0x00, 0x0E]
-let AXIS_COLOR = [0xF0, 0x8B, 0x33]
-let BOID_COLOR = [0xD7, 0x54, 0x04]
-
-let currBoids
-let prevBoids
-
 function setup() {
   // set width, height, and depth according to the browser
   WIDTH = windowWidth
@@ -30,15 +10,21 @@ function setup() {
   reset()
 
   // show frame rate every second in the console
-  setInterval(function()  { console.log(frameRate()) }, 1000)
+  setInterval(function()  { console.clear(); console.log('Bees:', currBees.length) }, 1000)
 }
 
 function reset() {
-  currBoids = new Array()
-  prevBoids = new Array()
+  currBees = new Array()
+  prevBees = new Array()
+  currFoods = new Array()
+  prevFoods = new Array()
 
-  for (let i = 0; i < NUM_BOIDS; i++) {
-    currBoids.push(new Boid())
+  for (let i = 0; i < NUM_BEES; i++) {
+    currBees.push(new Bee())
+  }
+
+  for (let i = 0; i < NUM_FOODS; i++) {
+    currFoods.push(new Food())
   }
 }
 
@@ -66,126 +52,99 @@ function draw() {
   line(WIDTH/2, -HEIGHT/2, -DEPTH/2, -WIDTH/2, -HEIGHT/2, -DEPTH/2)
   line(-WIDTH/2, HEIGHT/2, -DEPTH/2, -WIDTH/2, -HEIGHT/2, -DEPTH/2)
 
-  // draw each boid
-  for (let boid of currBoids) {
-    boid.draw()
+  // draw
+  for (let food of currFoods) {
+    food.draw()
   }
 
-  // deep copy currBoids
-  prevBoids = [...currBoids].map(i => ({ ...i}))
+  for (let bee of currBees) {
+    bee.draw()
+  }
 
   // build octree to speed up the searching of neighbors
-  let octree = new Octree(new Cuboid(new p5.Vector(0, 0, 0), new p5.Vector(WIDTH/2, HEIGHT/2, DEPTH/2)), 100)
-  octree.build(prevBoids)
+  let beeOctree = new Octree(new Cuboid(new p5.Vector(0, 0, 0), new p5.Vector(WIDTH/2, HEIGHT/2, DEPTH/2)), 100)
+  beeOctree.build(currBees)
 
-  // update the location of each boid
-  for (let boid of currBoids) {
-    let searchCuboid = new Cuboid(boid.position, new p5.Vector(DIST, DIST, DIST))
-    boid.update(octree.search(searchCuboid))
-  }
-}
+  // check if a bee goes back to hive
+  for (let bee of currBees) {
+    if (bee.position.dist(createVector(-WIDTH/2, -HEIGHT/2, -DEPTH/2)) < CHECK_DIST) {
+      if (bee.gotFood) {
+        STORED_FOOD += 1
+      }
 
-class Boid {
-  constructor() {
-    this.position = new p5.Vector(random(-WIDTH/2, WIDTH/2), random(-HEIGHT/2, HEIGHT/2), random(-DEPTH/2, DEPTH/2))
-    this.velocity = p5.Vector.random3D()
-    this.velocity.setMag(VEL_LIMIT) // set the magnitude of velocity to VEL_LIMIT
-    this.color = BOID_COLOR
+      bee.gotFood = false
+    }
   }
 
-  _searchNeighbors(boids) {
-    // set some lambda functions for further usage
-    let getPointsDist = function(p1, p2) { return p1.dist(p2) }
-    let getVectorsAngle = function(v1, v2) { return acos(v1.dot(v2) / (v1.mag() * v2.mag())) }
+  // decrement the life of bee
+  for (let bee of currBees) {
+    bee.life -= 1
+  }
 
-    let neighbors = new Array()
-
-    for (let boid of boids) {
-      let testDist = getPointsDist(this.position, boid.position)
-      let testAngle = getVectorsAngle(this.velocity, p5.Vector.sub(boid.position, this.position))
-      if (testDist < DIST && testAngle < ANGLE) {
-        neighbors.push(boid)
+  // check if any foods are consumed
+  for (let food of currFoods) {
+    let searchCuboid = new Cuboid(food.position, new p5.Vector(CHECK_DIST, CHECK_DIST, CHECK_DIST))
+    for (let bee of beeOctree.search(searchCuboid)) {
+      if (!bee.gotFood) {
+        bee.gotFood = true
+        food.life -= 1
+        break
       }
     }
-
-    return neighbors
   }
 
-  _separate(neighbors) {
-    let velocity = new p5.Vector(0, 0, 0)
+  // remove bees and foods
+  let removeBeeIdx = new Array()
+  let removeFoodIdx = new Array()
 
-    for (let neighbor of neighbors) {
-      velocity.sub(p5.Vector.sub(neighbor.position, this.position))
-    }
-
-    return velocity
-  }
-
-  _align(neighbors) {
-    let velocity = this.velocity.copy()
-
-    for (let neighbor of neighbors) {
-      velocity.add(neighbor.velocity)
-    }
-    velocity.div(neighbors.length + 1)
-    velocity.sub(this.velocity)
-
-    return velocity
-  }
-
-  _cohere(neighbors) {
-    let position = this.position.copy()
-
-    for (let neighbor of neighbors) {
-      position.add(neighbor.position)
-    }
-    position.div(neighbors.length + 1)
-
-    let velocity = p5.Vector.sub(position, this.position)
-
-    return velocity
-  }
-
-  update(boids) {
-    let neighbors = this._searchNeighbors(boids)
-    let vS = this._separate(neighbors)
-    let vA = this._align(neighbors)
-    let vC = this._cohere(neighbors)
-    vS.setMag(VEL_LIMIT) // set the magnitude of the velocity of alignment to VEL_LIMIT
-    vA.setMag(VEL_LIMIT) // set the magnitude of the velocity of seperation to VEL_LIMIT
-    vC.setMag(VEL_LIMIT) // set the magnitude of the velocity of cohesion to VEL_LIMIT
-    this.velocity.add(p5.Vector.mult(vS, SEP_MULTIPLIER))
-    this.velocity.add(p5.Vector.mult(vA, ALI_MULTIPLIER))
-    this.velocity.add(p5.Vector.mult(vC, COH_MULTIPLIER))
-
-    this.velocity.setMag(VEL_LIMIT) // set the magnitude of velocity to VEL_LIMIT
-
-    this.position = p5.Vector.add(this.position, this.velocity) // update the position
-
-    // handle the situation of out of boundary
-    if (this.position.x < -WIDTH/2) {
-      this.position.x = WIDTH/2
-    } else if (this.position.x > WIDTH/2) {
-      this.position.x = -WIDTH/2
-    }
-    if (this.position.y < -HEIGHT/2) {
-      this.position.y = HEIGHT/2
-    } else if (this.position.y > HEIGHT/2) {
-      this.position.y = -HEIGHT/2
-    }
-    if (this.position.z < -DEPTH/2) {
-      this.position.z = DEPTH/2
-    } else if (this.position.z > DEPTH/2) {
-      this.position.z = -DEPTH/2
+  for (let i = 0; i < currBees.length; i++) {
+    if (currBees[i].isDead()) {
+      removeBeeIdx.push(i)
     }
   }
 
-  draw() {
-    push()
-    translate(this.position)
-    fill(this.color)
-    noStroke()
-    sphere(8)
-    pop()
+  for (let i = 0; i < currFoods.length; i++) {
+    if (currFoods[i].isDead()) {
+      removeFoodIdx.push(i)
+    }
   }
+
+  removeBeeIdx.reverse()
+  removeFoodIdx.reverse()
+
+  for (let i of removeBeeIdx) {
+    currBees.splice(i, 1)
+  }
+
+  for (let i of removeFoodIdx) {
+    currFoods.splice(i, 1)
+  }
+
+  // generate new bees and foods
+  for (let i = NUM_FOODS - currFoods.length; i >= 0; i--) {
+    currFoods.push(new Food())
+  }
+
+  for (; STORED_FOOD >= NEW_BEE_COST; currBees.push(new Bee()), STORED_FOOD -= NEW_BEE_COST)
+
+  // deep copy
+  prevBees = [...currBees].map(i => ({...i}))
+
+  // build octree to speed up the searching of neighbors
+  beeOctree = new Octree(new Cuboid(new p5.Vector(0, 0, 0), new p5.Vector(WIDTH/2, HEIGHT/2, DEPTH/2)), 100)
+  beeOctree.build(prevBees)
+
+  // update the location of each bee
+  for (let bee of currBees) {
+    let searchCuboid = new Cuboid(bee.position, new p5.Vector(DIST, DIST, DIST))
+    bee.update(beeOctree.search(searchCuboid), currFoods)
+  }
+
+  // draw cell
+  push()
+  translate(-WIDTH/2, -HEIGHT/2, -DEPTH/2)
+  fill([0x8A, 0x2C, 0x02])
+  noStroke()
+  sphere(100)
+  pop()
 }
