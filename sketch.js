@@ -10,7 +10,16 @@ function setup() {
   reset()
 
   // show frame rate every second in the console
-  setInterval(function()  { console.clear(); console.log('Bees:', currBees.length) }, 1000)
+  setInterval(
+    function() {
+      console.clear()
+      console.log(
+        'Frame:', Math.round(frameRate()),
+        'Bees:', currBees.length,
+        'Foods:', currFoods.length)
+    },
+    1000
+  )
 }
 
 function reset() {
@@ -121,7 +130,7 @@ function draw() {
   }
 
   // generate new bees and foods
-  for (let i = NUM_FOODS - currFoods.length; i >= 0; i--) {
+  for (let i = NUM_FOODS - currFoods.length; i > 0; i--) {
     currFoods.push(new Food())
   }
 
