@@ -14,9 +14,9 @@ function setup() {
     function() {
       console.clear()
       console.log(
-        'Frame:', Math.round(frameRate()),
-        'Bees:', currBees.length,
-        'Foods:', currFoods.length)
+        'Fps:', Math.round(frameRate()),
+        '  Bee:', currBees.length,
+        '  Food:', currFoods.length)
     },
     1000
   )
