@@ -131,6 +131,9 @@ function draw() {
 
   // generate new bees and foods
   for (let i = NUM_FOODS - currFoods.length; i > 0; i--) {
+    if (Math.random() > 0.01) {
+      break;
+    }
     currFoods.push(new Food())
   }
 

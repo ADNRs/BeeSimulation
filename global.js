@@ -13,7 +13,7 @@ let NUM_FOODS = 50
 let LIFE_BEE = 2000
 let LIFE_FOOD = 10
 let STORED_FOOD = 0
-let NEW_BEE_COST = 2
+let NEW_BEE_COST = 1
 
 let VEL_LIMIT = 3 // limit of velocity
 let DIST = 100
