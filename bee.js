@@ -18,7 +18,7 @@ class Bee {
     for (let bee of bees) {
       let testDist = getPointsDist(this.position, bee.position)
       let testAngle = getVectorsAngle(this.velocity, p5.Vector.sub(bee.position, this.position))
-      if (testDist < DIST && testAngle < ANGLE) {
+      if (testDist < NEIGHBOR_DIST && testAngle < NEIGHBOR_ANGLE) {
         neighbors.push(bee)
       }
     }
@@ -63,7 +63,7 @@ class Bee {
 
   _sense(foods) {
     let velocity = createVector(0, 0, 0)
-    let bestDist = DIST * 2
+    let bestDist = SENSE_DIST
 
     if (!this.gotFood) {
     for (let food of foods) {
@@ -73,7 +73,7 @@ class Bee {
         }
       }
     } else {
-      velocity = p5.Vector.sub(createVector(-WIDTH/2, -HEIGHT/2, -DEPTH/2), this.position)
+      velocity = p5.Vector.sub(HIVE_POSITION, this.position)
     }
 
     return velocity
@@ -83,23 +83,40 @@ class Bee {
       return p5.Vector.random3D()
   }
 
-  update(bees, foods) {
+  _attack(predators) {
+    let velocity = createVector(0, 0, 0)
+    let bestDist = SENSE_DIST
+
+    for (let predator of predators) {
+        if (this.position.dist(predator.position) < bestDist) {
+          bestDist = this.position.dist(predator.position)
+          velocity = p5.Vector.sub(predator.position, this.position)
+        }
+    }
+
+    return velocity
+  }
+
+  update(bees, foods, predators) {
     let neighbors = this._searchNeighbors(bees)
     let vS = this._separate(neighbors)
     let vA = this._align(neighbors)
     let vC = this._cohere(neighbors)
     let vSen = this._sense(foods)
-    let vW = this._wander(foods)
+    let vW = this._wander()
+    let vAtk = this._attack(predators)
     vS.setMag(VEL_LIMIT) // set the magnitude of the velocity of alignment to VEL_LIMIT
     vA.setMag(VEL_LIMIT) // set the magnitude of the velocity of seperation to VEL_LIMIT
     vC.setMag(VEL_LIMIT) // set the magnitude of the velocity of cohesion to VEL_LIMIT
     vSen.setMag(VEL_LIMIT)
     vW.setMag(VEL_LIMIT)
+    vAtk.setMag(VEL_LIMIT)
     this.velocity.add(p5.Vector.mult(vS, SEP_MULTIPLIER))
     this.velocity.add(p5.Vector.mult(vA, ALI_MULTIPLIER))
     this.velocity.add(p5.Vector.mult(vC, COH_MULTIPLIER))
     this.velocity.add(p5.Vector.mult(vSen, SEN_MULTIPLIER))
     this.velocity.add(p5.Vector.mult(vW, WAN_MULTIPLIER))
+    this.velocity.add(p5.Vector.mult(vAtk, ATK_MULTIPLIER))
 
     this.velocity.setMag(VEL_LIMIT) // set the magnitude of velocity to VEL_LIMIT
 
@@ -123,8 +140,8 @@ class Bee {
     if (this.position.z < -DEPTH/2) {
       this.position.z = -DEPTH/2
       this.velocity.z = -this.velocity.z
-    } else if (this.position.z > DEPTH/2) {
-      this.position.z = DEPTH/2
+    } else if (this.position.z > 0) {
+      this.position.z = 0
       this.velocity.z = -this.velocity.z
     }
   }

@@ -3,6 +3,7 @@ function setup() {
   WIDTH = windowWidth
   HEIGHT = windowHeight
   DEPTH = WIDTH + HEIGHT
+  HIVE_POSITION = createVector(-WIDTH/2, -HEIGHT/2, -DEPTH/2)
 
   // initial setup for drawing
   createCanvas(WIDTH, HEIGHT, WEBGL)
@@ -16,7 +17,8 @@ function setup() {
       console.log(
         'Fps:', Math.round(frameRate()),
         '  Bee:', currBees.length,
-        '  Food:', currFoods.length)
+        '  Food:', currFoods.length,
+        '  Pred:', currPredators.length)
     },
     1000
   )
@@ -26,7 +28,7 @@ function reset() {
   currBees = new Array()
   prevBees = new Array()
   currFoods = new Array()
-  prevFoods = new Array()
+  currPredators = new Array()
 
   for (let i = 0; i < NUM_BEES; i++) {
     currBees.push(new Bee())
@@ -45,9 +47,45 @@ function draw() {
   // set background color
   background(BG_COLOR)
 
-  // set light location
-  ambientLight(100)
-  pointLight(0xFF, 0xFF, 0xFF, -DEPTH/2, -HEIGHT/2, DEPTH/2)
+  // draw background
+  // push()
+  // noStroke()
+  // translate(0, 0, -DEPTH/2)
+  // fill([0x0A, 0xBD, 0xA0])
+  // plane(WIDTH, HEIGHT)
+  // pop()
+  //
+  // push()
+  // noStroke()
+  // translate(WIDTH/2, 0, 0)
+  // fill([0x0A, 0xBD, 0xA0])
+  // rotateY(270)
+  // plane(DEPTH, HEIGHT)
+  // pop()
+  //
+  // push()
+  // noStroke()
+  // translate(-WIDTH/2, 0, 0)
+  // fill([0x0A, 0xBD, 0xA0])
+  // rotateY(90)
+  // plane(DEPTH, HEIGHT)
+  // pop()
+  //
+  // push()
+  // noStroke()
+  // translate(0, -HEIGHT/2, 0)
+  // fill([0x73, 0xC0, 0xF4])
+  // rotateX(270)
+  // plane(WIDTH, DEPTH)
+  // pop()
+  //
+  // push()
+  // noStroke()
+  // translate(0, HEIGHT/2, 0)
+  // fill([0x8F, 0x4F, 0x06])
+  // rotateX(90)
+  // plane(WIDTH, DEPTH)
+  // pop()
 
   // draw the cuboid that boids move around
   stroke(AXIS_COLOR)
@@ -61,6 +99,10 @@ function draw() {
   line(WIDTH/2, -HEIGHT/2, -DEPTH/2, -WIDTH/2, -HEIGHT/2, -DEPTH/2)
   line(-WIDTH/2, HEIGHT/2, -DEPTH/2, -WIDTH/2, -HEIGHT/2, -DEPTH/2)
 
+  // set light location
+  ambientLight(100)
+  pointLight(0xFF, 0xFF, 0xFF, -DEPTH/2, -HEIGHT/2, DEPTH/2)
+
   // draw
   for (let food of currFoods) {
     food.draw()
@@ -68,6 +110,10 @@ function draw() {
 
   for (let bee of currBees) {
     bee.draw()
+  }
+
+  for (let predator of currPredators) {
+    predator.draw()
   }
 
   // build octree to speed up the searching of neighbors
@@ -90,6 +136,10 @@ function draw() {
     bee.life -= 1
   }
 
+  for (let predator of currPredators) {
+    predator.life -= 1
+  }
+
   // check if any foods are consumed
   for (let food of currFoods) {
     let searchCuboid = new Cuboid(food.position, new p5.Vector(CHECK_DIST, CHECK_DIST, CHECK_DIST))
@@ -102,9 +152,22 @@ function draw() {
     }
   }
 
-  // remove bees and foods
+  for (let predator of currPredators) {
+    let searchCuboid = new Cuboid(predator.position, new p5.Vector(CHECK_DIST, CHECK_DIST, CHECK_DIST))
+    for (let bee of beeOctree.search(searchCuboid)) {
+      predator.life -= 1
+      if (currKillInterval >= PREDATOR_KILL_INTERVAL) {
+        currKillInterval -= PREDATOR_KILL_INTERVAL
+        bee.life = 0
+      }
+    }
+  }
+  currKillInterval += 1
+
+  // remove the object with 0 life
   let removeBeeIdx = new Array()
   let removeFoodIdx = new Array()
+  let removePredatorIdx = new Array()
 
   for (let i = 0; i < currBees.length; i++) {
     if (currBees[i].isDead()) {
@@ -118,8 +181,15 @@ function draw() {
     }
   }
 
+  for (let i = 0; i < currPredators.length; i++) {
+    if (currPredators[i].isDead()) {
+      removePredatorIdx.push(i)
+    }
+  }
+
   removeBeeIdx.reverse()
   removeFoodIdx.reverse()
+  removePredatorIdx.reverse()
 
   for (let i of removeBeeIdx) {
     currBees.splice(i, 1)
@@ -129,15 +199,23 @@ function draw() {
     currFoods.splice(i, 1)
   }
 
-  // generate new bees and foods
+  for (let i of removePredatorIdx) {
+    currPredators.splice(i, 1)
+  }
+
+  // generate new object
   for (let i = NUM_FOODS - currFoods.length; i > 0; i--) {
-    if (Math.random() > 0.01) {
+    if (Math.random() > FOOD_REGEN_PROB) {
       break;
     }
     currFoods.push(new Food())
   }
 
   for (; STORED_FOOD >= NEW_BEE_COST; currBees.push(new Bee()), STORED_FOOD -= NEW_BEE_COST)
+
+  if (currBees.length >= PREDATOR_COND && currPredators.length < PREDATOR_LIMIT) {
+    currPredators.push(new Predator())
+  }
 
   // deep copy
   prevBees = [...currBees].map(i => ({...i}))
@@ -148,14 +226,19 @@ function draw() {
 
   // update the location of each bee
   for (let bee of currBees) {
-    let searchCuboid = new Cuboid(bee.position, new p5.Vector(DIST, DIST, DIST))
-    bee.update(beeOctree.search(searchCuboid), currFoods)
+    let searchCuboid = new Cuboid(bee.position, new p5.Vector(NEIGHBOR_DIST, NEIGHBOR_DIST, NEIGHBOR_DIST))
+    bee.update(beeOctree.search(searchCuboid), currFoods, currPredators)
   }
 
-  // draw cell
+  for (let predator of currPredators) {
+    let searchCuboid = new Cuboid(predator.position, new p5.Vector(NEIGHBOR_DIST, NEIGHBOR_DIST, NEIGHBOR_DIST))
+    predator.update(beeOctree.search(searchCuboid))
+  }
+
+  // draw hive
   push()
-  translate(-WIDTH/2, -HEIGHT/2, -DEPTH/2)
-  fill([0x8A, 0x2C, 0x02])
+  translate(HIVE_POSITION)
+  fill(HIVE_COLOR)
   noStroke()
   ellipsoid(100, 200, 100)
   pop()
