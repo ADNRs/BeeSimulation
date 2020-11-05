@@ -1,6 +1,6 @@
 class Food {
   constructor() {
-    this.position = new p5.Vector(random(-WIDTH/2, WIDTH/2), random(-HEIGHT/2, HEIGHT/2), random(-DEPTH/2, DEPTH/4))
+    this.position = new p5.Vector(random(-WIDTH/2, WIDTH/2), random(HEIGHT/4, HEIGHT/2), random(-DEPTH/2, DEPTH/4))
     this.color = FOOD_COLOR
     this.life = LIFE_FOOD
   }
@@ -12,9 +12,13 @@ class Food {
   draw() {
     push()
     translate(this.position)
-    fill(this.color)
+    fill([0xFF, 0xA0, 0xA0])
     noStroke()
-    sphere(8)
+    sphere(this.life*3)
+    let h = HEIGHT/2 - this.position.y
+    translate(0, h/2, 0)
+    fill([0x00, 0xE0, 0x00])
+    cylinder(3, h)
     pop()
   }
 

@@ -157,6 +157,6 @@ function draw() {
   translate(-WIDTH/2, -HEIGHT/2, -DEPTH/2)
   fill([0x8A, 0x2C, 0x02])
   noStroke()
-  sphere(100)
+  ellipsoid(100, 200, 100)
   pop()
 }

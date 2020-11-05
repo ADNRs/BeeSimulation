@@ -79,20 +79,27 @@ class Bee {
     return velocity
   }
 
+  _wander() {
+      return p5.Vector.random3D()
+  }
+
   update(bees, foods) {
     let neighbors = this._searchNeighbors(bees)
     let vS = this._separate(neighbors)
     let vA = this._align(neighbors)
     let vC = this._cohere(neighbors)
     let vSen = this._sense(foods)
+    let vW = this._wander(foods)
     vS.setMag(VEL_LIMIT) // set the magnitude of the velocity of alignment to VEL_LIMIT
     vA.setMag(VEL_LIMIT) // set the magnitude of the velocity of seperation to VEL_LIMIT
     vC.setMag(VEL_LIMIT) // set the magnitude of the velocity of cohesion to VEL_LIMIT
     vSen.setMag(VEL_LIMIT)
+    vW.setMag(VEL_LIMIT)
     this.velocity.add(p5.Vector.mult(vS, SEP_MULTIPLIER))
     this.velocity.add(p5.Vector.mult(vA, ALI_MULTIPLIER))
     this.velocity.add(p5.Vector.mult(vC, COH_MULTIPLIER))
     this.velocity.add(p5.Vector.mult(vSen, SEN_MULTIPLIER))
+    this.velocity.add(p5.Vector.mult(vW, WAN_MULTIPLIER))
 
     this.velocity.setMag(VEL_LIMIT) // set the magnitude of velocity to VEL_LIMIT
 
@@ -127,7 +134,7 @@ class Bee {
     translate(this.position)
     fill(this.color)
     noStroke()
-    sphere(8)
+    sphere(12)
     pop()
   }
 
