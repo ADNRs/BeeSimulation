@@ -3,7 +3,8 @@ function setup() {
   WIDTH = windowWidth
   HEIGHT = windowHeight
   DEPTH = WIDTH + HEIGHT
-  HIVE_POSITION = createVector(-WIDTH/2, -HEIGHT/2, -DEPTH/2)
+  HIVE_POSITION = createVector(-WIDTH/2, -HEIGHT/2, 0)
+  PREDATOR_POSITION = createVector(WIDTH/2, -HEIGHT/2, -DEPTH/2)
 
   // initial setup for drawing
   createCanvas(WIDTH, HEIGHT, WEBGL)
@@ -122,7 +123,7 @@ function draw() {
 
   // check if a bee goes back to hive
   for (let bee of currBees) {
-    if (bee.position.dist(createVector(-WIDTH/2, -HEIGHT/2, -DEPTH/2)) < CHECK_DIST) {
+    if (bee.position.dist(HIVE_POSITION) < CHECK_DIST) {
       if (bee.gotFood) {
         STORED_FOOD += 1
       }
@@ -213,9 +214,17 @@ function draw() {
 
   for (; STORED_FOOD >= NEW_BEE_COST; currBees.push(new Bee()), STORED_FOOD -= NEW_BEE_COST)
 
-  if (currBees.length >= PREDATOR_COND && currPredators.length < PREDATOR_LIMIT) {
-    currPredators.push(new Predator())
+  if (
+    currPredators.length < Math.floor(currBees.length/PREDATOR_COND) &&
+    currPredators.length < PREDATOR_LIMIT &&
+    currRespawnInterval >= PREDATOR_RESPAWN_INTERVAL
+  ) {
+    for (let i = currPredators.length; i < Math.floor(currBees.length/PREDATOR_COND); i++) {
+      currPredators.push(new Predator())
+    }
+    currRespawnInterval -= PREDATOR_RESPAWN_INTERVAL
   }
+  currRespawnInterval += 1
 
   // deep copy
   prevBees = [...currBees].map(i => ({...i}))

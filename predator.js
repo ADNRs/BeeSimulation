@@ -1,6 +1,6 @@
 class Predator {
   constructor() {
-    this.position = new p5.Vector(random(-WIDTH/4, WIDTH/2), random(-HEIGHT/4, -HEIGHT/2.5), random(-DEPTH/4, DEPTH/4))
+    this.position = new p5.Vector(PREDATOR_POSITION.x, PREDATOR_POSITION.y, PREDATOR_POSITION.z)
     this.velocity = p5.Vector.random3D()
     this.velocity.setMag(VEL_LIMIT) // set the magnitude of velocity to VEL_LIMIT
     this.color = PREDATOR_COLOR

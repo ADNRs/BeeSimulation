@@ -1,6 +1,6 @@
 class Bee {
   constructor() {
-    this.position = new p5.Vector(-WIDTH/2, -HEIGHT/2, -DEPTH/2)
+    this.position = new p5.Vector(HIVE_POSITION.x, HIVE_POSITION.y, HIVE_POSITION.z)
     this.velocity = p5.Vector.random3D()
     this.velocity.setMag(VEL_LIMIT) // set the magnitude of velocity to VEL_LIMIT
     this.color = BEE_COLOR
