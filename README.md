@@ -29,9 +29,9 @@ Double click `index.html`, and you will see the simulation in your browser.
 This program shall only be used as a demonstration for midterm project of CSE326, 2020 fall.
 
 ## Contribution
-This program is individually completed by me, with the idea of predator proposed by Owen Chen.
-The complementary report is individually completed by me, with helps from K.Y. Ko and Owen Chen.
-The complementary slides are individually completed by me.
++ This program is individually completed by me, with the idea of predator proposed by Owen Chen.
++ The complementary report is individually completed by me, with helps from K.Y. Ko and Owen Chen.
++ The complementary slides are individually completed by me.
 
 ## TODO
 This program will be refactored someday, I am now not satisfied with the architecture of it.
