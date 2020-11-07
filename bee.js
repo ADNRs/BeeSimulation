@@ -105,12 +105,12 @@ class Bee {
     let vSen = this._sense(foods)
     let vW = this._wander()
     let vAtk = this._attack(predators)
-    vS.setMag(VEL_LIMIT) // set the magnitude of the velocity of alignment to VEL_LIMIT
-    vA.setMag(VEL_LIMIT) // set the magnitude of the velocity of seperation to VEL_LIMIT
-    vC.setMag(VEL_LIMIT) // set the magnitude of the velocity of cohesion to VEL_LIMIT
-    vSen.setMag(VEL_LIMIT)
-    vW.setMag(VEL_LIMIT)
-    vAtk.setMag(VEL_LIMIT)
+    vS.setMag(VEL_LIMIT)   // set the magnitude of the velocity of alignment to VEL_LIMIT
+    vA.setMag(VEL_LIMIT)   // set the magnitude of the velocity of seperation to VEL_LIMIT
+    vC.setMag(VEL_LIMIT)   // set the magnitude of the velocity of cohesion to VEL_LIMIT
+    vSen.setMag(VEL_LIMIT) // set the magnitude of the velocity of sense to VEL_LIMIT
+    vW.setMag(VEL_LIMIT)   // set the magnitude of the velocity of wander to VEL_LIMIT
+    vAtk.setMag(VEL_LIMIT) // set the magnitude of the velocity of attack to VEL_LIMIT
     this.velocity.add(p5.Vector.mult(vS, SEP_MULTIPLIER))
     this.velocity.add(p5.Vector.mult(vA, ALI_MULTIPLIER))
     this.velocity.add(p5.Vector.mult(vC, COH_MULTIPLIER))

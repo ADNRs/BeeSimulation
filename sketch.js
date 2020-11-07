@@ -11,7 +11,7 @@ function setup() {
   angleMode(DEGREES)
   reset()
 
-  // show frame rate every second in the console
+  // show some information every second in the console
   setInterval(
     function() {
       console.clear()
@@ -30,6 +30,7 @@ function reset() {
   prevBees = new Array()
   currFoods = new Array()
   currPredators = new Array()
+  STORED_FOOD = 0
 
   for (let i = 0; i < NUM_BEES; i++) {
     currBees.push(new Bee())
@@ -104,7 +105,7 @@ function draw() {
   ambientLight(100)
   pointLight(0xFF, 0xFF, 0xFF, -DEPTH/2, -HEIGHT/2, DEPTH/2)
 
-  // draw
+  // draw objects
   for (let food of currFoods) {
     food.draw()
   }
@@ -132,11 +133,12 @@ function draw() {
     }
   }
 
-  // decrement the life of bee
+  // decrease the life of bees
   for (let bee of currBees) {
     bee.life -= 1
   }
 
+  // decrease the life of predators
   for (let predator of currPredators) {
     predator.life -= 1
   }
@@ -153,6 +155,7 @@ function draw() {
     }
   }
 
+  // check if any fighting is occuring
   for (let predator of currPredators) {
     let searchCuboid = new Cuboid(predator.position, new p5.Vector(CHECK_DIST, CHECK_DIST, CHECK_DIST))
     for (let bee of beeOctree.search(searchCuboid)) {
@@ -165,7 +168,7 @@ function draw() {
   }
   currKillInterval += 1
 
-  // remove the object with 0 life
+  // remove the object with zero life
   let removeBeeIdx = new Array()
   let removeFoodIdx = new Array()
   let removePredatorIdx = new Array()
@@ -216,7 +219,7 @@ function draw() {
 
   if (
     currPredators.length < Math.floor(currBees.length/PREDATOR_COND) &&
-    currPredators.length < PREDATOR_LIMIT &&
+    currPredators.length < NUM_PREDATOR &&
     currRespawnInterval >= PREDATOR_RESPAWN_INTERVAL
   ) {
     for (let i = currPredators.length; i < Math.floor(currBees.length/PREDATOR_COND); i++) {
@@ -233,7 +236,7 @@ function draw() {
   beeOctree = new Octree(new Cuboid(new p5.Vector(0, 0, 0), new p5.Vector(WIDTH/2, HEIGHT/2, DEPTH/2)), 100)
   beeOctree.build(prevBees)
 
-  // update the location of each bee
+  // update the location of bees and predators
   for (let bee of currBees) {
     let searchCuboid = new Cuboid(bee.position, new p5.Vector(NEIGHBOR_DIST, NEIGHBOR_DIST, NEIGHBOR_DIST))
     bee.update(beeOctree.search(searchCuboid), currFoods, currPredators)

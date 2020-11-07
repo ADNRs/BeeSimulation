@@ -5,16 +5,15 @@ class Food {
     this.life = LIFE_FOOD
   }
 
-  update() {
-
-  }
-
   draw() {
     push()
+    // draw sphere
     translate(this.position)
     fill([0xFF, 0xA0, 0xA0])
     noStroke()
     sphere((this.life+1) * 2)
+
+    // draw cylinder
     let h = HEIGHT/2 - this.position.y
     translate(0, h/2, 0)
     fill([0x00, 0xE0, 0x00])

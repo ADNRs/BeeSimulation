@@ -4,7 +4,7 @@ class Predator {
     this.velocity = p5.Vector.random3D()
     this.velocity.setMag(VEL_LIMIT) // set the magnitude of velocity to VEL_LIMIT
     this.color = PREDATOR_COLOR
-    this.life = LIFE_BEE
+    this.life = LIFE_PREDATOR
   }
 
   _wander() {
