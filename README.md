@@ -12,14 +12,14 @@ This program is based on my previous project p5.boids.
 Double click `index.html`, and you will see the simulation in your browser.
 
 ## Description
-The detailed description of each file is available in AIMidReport.pdf.
+The detailed description of each file is available in doc/AIMidReport.pdf.
 
 ## Feature
 + display in 3D
 + use octree to optimize the performence of searching other bees
   + https://en.wikipedia.org/wiki/Octree
 + highly adjustable by changing predefined values in global.js
-+ consult the report of midterm project (AIMidReport.pdf) for more information
++ consult doc/AIMidReport.pdf for more information
 
 ## Reference
 + Boids by Craig Reynolds
