@@ -1,5 +1,5 @@
 # BeeSimulation
-Bee simulation is based on my previous project p5.boids.
+BeeSimulation is based on my previous project p5.boids.
 
 ## Setup
 + web browser
@@ -26,7 +26,7 @@ Double click `index.html`, and you will see the simulation in your browser.
   + https://p5js.org/reference/
 
 ## License
-This program shall only be used as a demonstration for midterm project of CSE326, 2020 fall.
+This program shall only be used as a demonstration for midterm project of CSE326, 2020 fall, NSYSU.
 
 ## Contribution
 + This program is individually completed by me, with the idea of predator proposed by Owen Chen.
