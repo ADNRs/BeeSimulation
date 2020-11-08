@@ -1,16 +1,18 @@
 # BeeSimulation
-BeeSimulation is based on my previous project p5.boids.
+BeeSimulation allows users to perform a simple bee simulation.
+
+This program is based on my previous project p5.boids.
 
 ## Setup
 + web browser
   + Google Chrome is recommended.
 + internet connection
 
-## Description
-The detailed description of each file is available in AIMidReport.pdf.
-
 ## Usage
 Double click `index.html`, and you will see the simulation in your browser.
+
+## Description
+The detailed description of each file is available in AIMidReport.pdf.
 
 ## Feature
 + display in 3D
@@ -34,8 +36,8 @@ This program shall only be used as a demonstration for midterm project of CSE326
 + The complementary slides are individually completed by me.
 
 ## TODO
-This program will be refactored someday, I am now not satisfied with the architecture of it.
-The licence will be changed to the MIT licence, once I finish the refactoring.
++ This program will be refactored someday, I am now not satisfied with the architecture of it.
++ The license will be changed to the MIT license, once I finish the refactoring.
 
 ```
 Copyright © 2020 C.Y. Chen
