@@ -1,15 +1,9 @@
 let WIDTH
 let HEIGHT
 let DEPTH
-let HIVE_POSITION
 let PREDATOR_POSITION
 
 let BG_COLOR = [0x07, 0x00, 0x0E]
-let AXIS_COLOR = [0xF0, 0x8B, 0x33]
-let BEE_COLOR = [0xF2, 0xA1, 0x04]
-let FOOD_COLOR = [0xFF, 0xFF, 0xFF]
-let PREDATOR_COLOR = [0xFF, 0x00, 0x00]
-let HIVE_COLOR = [0xD7, 0x54, 0x04]
 
 let NUM_BEES = 1
 let NUM_FOODS = 80
@@ -44,9 +38,4 @@ let SENSE_DIST = 200
 let CHECK_DIST = 20
 let ATK_DIST = 1500
 
-let currBees
-let prevBees
-let currFoods
-let currPredators
-let currKillInterval = 0
-let currRespawnInterval = 0
+let env;

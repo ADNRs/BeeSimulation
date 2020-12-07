@@ -1,11 +1,12 @@
 class Bee {
-  constructor() {
-    this.position = new p5.Vector(HIVE_POSITION.x, HIVE_POSITION.y, HIVE_POSITION.z)
+  constructor(colony) {
+    this.colony   = colony
+    this.position = new p5.Vector(colony.hivePos.x, colony.hivePos.y, colony.hivePos.z)
     this.velocity = p5.Vector.random3D()
+    this.color    = colony.color
+    this.life     = colony.beeLife
+    this.gotFood  = false
     this.velocity.setMag(VEL_LIMIT) // set the magnitude of velocity to VEL_LIMIT
-    this.color = BEE_COLOR
-    this.life = LIFE_BEE
-    this.gotFood = false
   }
 
   _searchNeighbors(bees) {
@@ -18,7 +19,7 @@ class Bee {
     for (let bee of bees) {
       let testDist = getPointsDist(this.position, bee.position)
       let testAngle = getVectorsAngle(this.velocity, p5.Vector.sub(bee.position, this.position))
-      if (testDist < NEIGHBOR_DIST && testAngle < NEIGHBOR_ANGLE) {
+      if (testDist < this.colony.beeDist && testAngle < this.colony.beeAngle) {
         neighbors.push(bee)
       }
     }
@@ -73,7 +74,7 @@ class Bee {
         }
       }
     } else {
-      velocity = p5.Vector.sub(HIVE_POSITION, this.position)
+      velocity = p5.Vector.sub(this.colony.hivePos, this.position)
     }
 
     return velocity
@@ -99,24 +100,24 @@ class Bee {
 
   update(bees, foods, predators) {
     let neighbors = this._searchNeighbors(bees)
-    let vS = this._separate(neighbors)
-    let vA = this._align(neighbors)
-    let vC = this._cohere(neighbors)
-    let vSen = this._sense(foods)
-    let vW = this._wander()
-    let vAtk = this._attack(predators)
+    let vS        = this._separate(neighbors)
+    let vA        = this._align(neighbors)
+    let vC        = this._cohere(neighbors)
+    let vSen      = this._sense(foods)
+    let vW        = this._wander()
+    let vAtk      = this._attack(predators)
     vS.setMag(VEL_LIMIT)   // set the magnitude of the velocity of alignment to VEL_LIMIT
     vA.setMag(VEL_LIMIT)   // set the magnitude of the velocity of seperation to VEL_LIMIT
     vC.setMag(VEL_LIMIT)   // set the magnitude of the velocity of cohesion to VEL_LIMIT
     vSen.setMag(VEL_LIMIT) // set the magnitude of the velocity of sense to VEL_LIMIT
     vW.setMag(VEL_LIMIT)   // set the magnitude of the velocity of wander to VEL_LIMIT
     vAtk.setMag(VEL_LIMIT) // set the magnitude of the velocity of attack to VEL_LIMIT
-    this.velocity.add(p5.Vector.mult(vS, SEP_MULTIPLIER))
-    this.velocity.add(p5.Vector.mult(vA, ALI_MULTIPLIER))
-    this.velocity.add(p5.Vector.mult(vC, COH_MULTIPLIER))
-    this.velocity.add(p5.Vector.mult(vSen, SEN_MULTIPLIER))
-    this.velocity.add(p5.Vector.mult(vW, WAN_MULTIPLIER))
-    this.velocity.add(p5.Vector.mult(vAtk, ATK_MULTIPLIER))
+    this.velocity.add(p5.Vector.mult(vS, this.colony.sep))
+    this.velocity.add(p5.Vector.mult(vA, this.colony.ali))
+    this.velocity.add(p5.Vector.mult(vC, this.colony.coh))
+    this.velocity.add(p5.Vector.mult(vSen, this.colony.sen))
+    this.velocity.add(p5.Vector.mult(vW, this.colony.wan))
+    this.velocity.add(p5.Vector.mult(vAtk, this.colony.atk))
 
     this.velocity.setMag(VEL_LIMIT) // set the magnitude of velocity to VEL_LIMIT
 
@@ -153,9 +154,5 @@ class Bee {
     noStroke()
     sphere(12)
     pop()
-  }
-
-  isDead() {
-    return this.life <= 0
   }
 }
