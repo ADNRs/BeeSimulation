@@ -4,7 +4,7 @@ class Bee {
     this.position = new p5.Vector(colony.hivePos.x, colony.hivePos.y, colony.hivePos.z)
     this.velocity = p5.Vector.random3D()
     this.color    = colony.color
-    this.life     = colony.beeLife
+    this.life     = colony.lifeBee
     this.gotFood  = false
     this.velocity.setMag(VEL_LIMIT) // set the magnitude of velocity to VEL_LIMIT
   }
