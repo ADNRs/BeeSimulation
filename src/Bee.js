@@ -6,6 +6,7 @@ class Bee {
     this.color    = colony.color
     this.life     = colony.lifeBee
     this.gotFood  = false
+    this.prevPos
     this.velocity.setMag(VEL_LIMIT) // set the magnitude of velocity to VEL_LIMIT
   }
 
@@ -67,16 +68,27 @@ class Bee {
     let bestDist = SENSE_DIST
 
     if (!this.gotFood) {
-    for (let food of foods) {
-        if (this.position.dist(food.position) < bestDist) {
-          bestDist = this.position.dist(food.position)
-          velocity = p5.Vector.sub(food.position, this.position)
+      for (let food of foods) {
+          if (this.position.dist(food.position) < bestDist) {
+            bestDist = this.position.dist(food.position)
+            velocity = p5.Vector.sub(food.position, this.position)
+          }
         }
-      }
-    } else {
-      velocity = p5.Vector.sub(this.colony.hivePos, this.position)
     }
 
+    return velocity
+  }
+
+  _memorize() {
+    let velocity = createVector(0, 0, 0)
+    if (!this.gotFood) {
+      if (this.prevPos) {
+        velocity = p5.Vector.sub(this.prevPos, this.position)
+      }
+    }
+    else {
+      velocity = p5.Vector.sub(this.colony.hivePos, this.position)
+    }
     return velocity
   }
 
@@ -104,18 +116,21 @@ class Bee {
     let vA        = this._align(neighbors)
     let vC        = this._cohere(neighbors)
     let vSen      = this._sense(foods)
+    let vM        = this._memorize()
     let vW        = this._wander()
     let vAtk      = this._attack(predators)
     vS.setMag(VEL_LIMIT)   // set the magnitude of the velocity of alignment to VEL_LIMIT
     vA.setMag(VEL_LIMIT)   // set the magnitude of the velocity of seperation to VEL_LIMIT
     vC.setMag(VEL_LIMIT)   // set the magnitude of the velocity of cohesion to VEL_LIMIT
     vSen.setMag(VEL_LIMIT) // set the magnitude of the velocity of sense to VEL_LIMIT
+    vM.setMag(VEL_LIMIT)
     vW.setMag(VEL_LIMIT)   // set the magnitude of the velocity of wander to VEL_LIMIT
     vAtk.setMag(VEL_LIMIT) // set the magnitude of the velocity of attack to VEL_LIMIT
     this.velocity.add(p5.Vector.mult(vS, this.colony.sep))
     this.velocity.add(p5.Vector.mult(vA, this.colony.ali))
     this.velocity.add(p5.Vector.mult(vC, this.colony.coh))
     this.velocity.add(p5.Vector.mult(vSen, this.colony.sen))
+    this.velocity.add(p5.Vector.mult(vM, this.colony.mem))
     this.velocity.add(p5.Vector.mult(vW, this.colony.wan))
     this.velocity.add(p5.Vector.mult(vAtk, this.colony.atk))
 

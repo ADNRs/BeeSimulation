@@ -1,6 +1,6 @@
 class Flower {
-  constructor(color, life) {
-    this.position = new p5.Vector(random(-WIDTH/2, WIDTH/2), random(HEIGHT/4, HEIGHT/2.5), random(-DEPTH/2, 0))
+  constructor(color, life, position) {
+    this.position = position
     this.color = color
     this.life = life
   }

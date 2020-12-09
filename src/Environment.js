@@ -11,7 +11,7 @@ class Environment {
     let R = [0xFF, 0x00, 0x00]
     let O = [0xD7, 0x54, 0x04]
     let W = [0xFF, 0xFF, 0xFF]
-    let numBee = 1
+    let numBee = 100
     let lifeBee = 500
 
     this.colonies.push(
@@ -33,8 +33,16 @@ class Environment {
 
   foods_init() {
     let P = [0xFF, 0xA0, 0xA0]
+    let G = [0xB9, 0xC4, 0x06]
+    let numFlower = 10
+    let lifeFlower = 1
+
     this.flowersGroup.push(
-      new Flowers(P, 80, 800)
+      new Flowers(P, numFlower, lifeFlower, [-WIDTH/2 + 0.15*WIDTH, 0 - 0.15*WIDTH], 0.1*WIDTH, 1)
+    )
+
+    this.flowersGroup.push(
+      new Flowers(G, numFlower, lifeFlower, [WIDTH/2 - 0.15*WIDTH, -DEPTH/2 + 0.15*WIDTH], 0.1*WIDTH, 1)
     )
   }
 
@@ -85,6 +93,10 @@ class Environment {
 
     for (let colony of this.colonies) {
       colony.giveBirth()
+    }
+
+    for (let flowers of this.flowersGroup) {
+      flowers.giveBirth()
     }
 
 

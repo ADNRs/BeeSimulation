@@ -9,6 +9,7 @@ var Colony = function(color, numBee, lifeBee, hivePos) {
   this.ali      = ALI_MULTIPLIER
   this.coh      = COH_MULTIPLIER
   this.sen      = SEN_MULTIPLIER
+  this.mem      = SEN_MULTIPLIER
   this.wan      = WAN_MULTIPLIER
   this.atk      = ATK_MULTIPLIER
   this.beeDist  = NEIGHBOR_DIST
