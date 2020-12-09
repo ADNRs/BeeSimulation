@@ -1,8 +1,8 @@
-function Colony(color, numBees, lifeBee, hivePos) {
+var Colony = function(color, numBee, lifeBee, hivePos) {
   this.currBees
   this.octree
   this.color    = color
-  this.numBees  = numBees
+  this.numBee   = numBee
   this.lifeBee  = lifeBee
   this.hivePos  = hivePos
   this.sep      = SEP_MULTIPLIER
@@ -17,13 +17,11 @@ function Colony(color, numBees, lifeBee, hivePos) {
   this.reset()
 }
 
-Colony.prototype = Object.create(Cluster.prototype)
-
 Colony.prototype.reset = function() {
   this.currBees = new Array()
   this.food     = 0
 
-  for (let i = 0; i < this.numBees; i++) {
+  for (let i = 0; i < this.numBee; i++) {
     this.currBees.push(new Bee(this))
   }
 }
@@ -63,7 +61,7 @@ Colony.prototype.giveBirth = function() {
   for (; this.food >= NEW_BEE_COST; this.currBees.push(new Bee(this)), this.food -= NEW_BEE_COST);
 }
 
-Colony.prototype.update = function() {
+Colony.prototype.update = function(flowers) {
   // build octree to speed up the searching of neighbors
   this.octree = new Octree(new Cuboid(new p5.Vector(0, 0, 0), new p5.Vector(WIDTH/2, HEIGHT/2, DEPTH/2)), 50)
   this.octree.build([...this.currBees].map(i => ({...i})))
@@ -71,7 +69,7 @@ Colony.prototype.update = function() {
   // update the location of bees
   for (let bee of this.currBees) {
     let searchCuboid = new Cuboid(bee.position, new p5.Vector(this.beeDist, this.beeDist, this.beeDist))
-    bee.update(this.octree.search(searchCuboid), [], [])
+    bee.update(this.octree.search(searchCuboid), flowers, [])
   }
 }
 
