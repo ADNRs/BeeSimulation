@@ -5,8 +5,8 @@ class Bee {
     this.color        = color
     this.life         = life
     this.hivePos      = hivePos
-    this.gotFood      = false
     this.colonyParams = colonyParams
+    this.gotFood      = false
     this.prevPos
     this.velocity.setMag(VEL_LIMIT) // set the magnitude of velocity to VEL_LIMIT
   }
@@ -66,15 +66,17 @@ class Bee {
 
   _sense(foods) {
     let velocity = createVector(0, 0, 0)
-    let bestDist = SENSE_DIST
+    let bestDist = SEN_DIST
 
-    if (!this.gotFood) {
-      for (let food of foods) {
-          if (this.position.dist(food.position) < bestDist) {
-            bestDist = this.position.dist(food.position)
-            velocity = p5.Vector.sub(food.position, this.position)
+    if (this.colonyParams.type == COLLECTOR) {
+      if (!this.gotFood) {
+        for (let food of foods) {
+            if (this.position.dist(food.position) < bestDist) {
+              bestDist = this.position.dist(food.position)
+              velocity = p5.Vector.sub(food.position, this.position)
+            }
           }
-        }
+      }
     }
 
     return velocity
@@ -82,14 +84,18 @@ class Bee {
 
   _memorize() {
     let velocity = createVector(0, 0, 0)
-    if (!this.gotFood) {
-      if (this.prevPos) {
-        velocity = p5.Vector.sub(this.prevPos, this.position)
+
+    if (this.colonyParams.type == COLLECTOR) {
+      if (!this.gotFood) {
+        if (this.prevPos) {
+          velocity = p5.Vector.sub(this.prevPos, this.position)
+        }
+      }
+      else {
+        velocity = p5.Vector.sub(this.hivePos, this.position)
       }
     }
-    else {
-      velocity = p5.Vector.sub(this.hivePos, this.position)
-    }
+
     return velocity
   }
 
@@ -97,15 +103,17 @@ class Bee {
       return p5.Vector.random3D()
   }
 
-  _attack(predators) {
+  _attack(enemies) {
     let velocity = createVector(0, 0, 0)
-    let bestDist = SENSE_DIST
+    let bestDist = ATK_DIST
 
-    for (let predator of predators) {
-        if (this.position.dist(predator.position) < bestDist) {
-          bestDist = this.position.dist(predator.position)
-          velocity = p5.Vector.sub(predator.position, this.position)
-        }
+    if (this.colonyParams.type == ATTACKER) {
+      for (let enemy of enemies) {
+          if (this.position.dist(enemy.position) < bestDist) {
+            bestDist = this.position.dist(enemy.position)
+            velocity = p5.Vector.sub(enemy.position, this.position)
+          }
+      }
     }
 
     return velocity
@@ -120,12 +128,12 @@ class Bee {
     let vMem      = this._memorize()
     let vWan      = this._wander()
     let vAtk      = this._attack(predators)
-    vSep.setMag(VEL_LIMIT)   // set the magnitude of the velocity of alignment to VEL_LIMIT
-    vAli.setMag(VEL_LIMIT)   // set the magnitude of the velocity of seperation to VEL_LIMIT
-    vCoh.setMag(VEL_LIMIT)   // set the magnitude of the velocity of cohesion to VEL_LIMIT
+    vSep.setMag(VEL_LIMIT) // set the magnitude of the velocity of alignment to VEL_LIMIT
+    vAli.setMag(VEL_LIMIT) // set the magnitude of the velocity of seperation to VEL_LIMIT
+    vCoh.setMag(VEL_LIMIT) // set the magnitude of the velocity of cohesion to VEL_LIMIT
     vSen.setMag(VEL_LIMIT) // set the magnitude of the velocity of sense to VEL_LIMIT
     vMem.setMag(VEL_LIMIT)
-    vWan.setMag(VEL_LIMIT)   // set the magnitude of the velocity of wander to VEL_LIMIT
+    vWan.setMag(VEL_LIMIT) // set the magnitude of the velocity of wander to VEL_LIMIT
     vAtk.setMag(VEL_LIMIT) // set the magnitude of the velocity of attack to VEL_LIMIT
     this.velocity.add(p5.Vector.mult(vSen, this.colonyParams.sep))
     this.velocity.add(p5.Vector.mult(vAli, this.colonyParams.ali))

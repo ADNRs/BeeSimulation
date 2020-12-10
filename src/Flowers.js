@@ -27,7 +27,7 @@ Flowers.prototype.decreaseLife = function(bees) {
   let beeOctree = new Octree(new Cuboid(new p5.Vector(0, 0, 0), new p5.Vector(WIDTH/2, HEIGHT/2, DEPTH/2)), 100)
   beeOctree.build(bees)
   for (let flower of this.currFlowers) {
-    let searchCuboid = new Cuboid(flower.position, new p5.Vector(CHECK_DIST, CHECK_DIST, CHECK_DIST))
+    let searchCuboid = new Cuboid(flower.position, new p5.Vector(CHK_DIST, CHK_DIST, CHK_DIST))
     for (let bee of beeOctree.search(searchCuboid)) {
       if (!bee.gotFood) {
         bee.gotFood = true
@@ -42,7 +42,7 @@ Flowers.prototype.decreaseLife = function(bees) {
 Flowers.prototype.removeDeath = function() {
   let removeFlowerIdx = new Array()
   for (let i = 0; i < this.currFlowers.length; i++) {
-    if (this.currFlowers[i].life == 0) {
+    if (this.currFlowers[i].life <= 0) {
       removeFlowerIdx.push(i)
     }
   }

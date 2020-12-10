@@ -2,30 +2,33 @@ let WIDTH
 let HEIGHT
 let DEPTH
 
-let NUM_BEES = 1
-let NUM_FOODS = 80
+let BEE_NUM = 20
+let FLOWER_NUM = 5
 
-let LIFE_BEE = 1500
-let LIFE_FOOD = 10
+let BEE_LIFE = 1500
+let FLOWER_LIFE = 1
 
-let STORED_FOOD = 0
-let NEW_BEE_COST = 1
+let ATK_RATE = 0.2
+
+let BEE_COST = 1
+let FLOWER_PROB = 1
 
 let VEL_LIMIT = 8 // limit of velocity
-let SEP_MULTIPLIER = 0.07
-let ALI_MULTIPLIER = 0.07
-let COH_MULTIPLIER = 0.07
-let SEN_MULTIPLIER = 0.1
-let WAN_MULTIPLIER = 0.25
-let ATK_MULTIPLIER = 0.8
+let SEP = 0.07
+let ALI = 0.07
+let COH = 0.07
+let SEN = 0.1
+let MEM = 0.1
+let WAN = 0.25
+let ATK = 0.8
+let DIST = 100
+let ANGLE = 120
 
-let PRE_COH_MULTIPLIER = 0.5
+let ATK_DMG = 500
 
-let NEIGHBOR_DIST = 100
-let NEIGHBOR_ANGLE = 120
-let SENSE_DIST = 200
-let CHECK_DIST = 20
-let ATK_DIST = 1500
+let SEN_DIST = 200
+let ATK_DIST = 300
+let CHK_DIST = 20
 
 let ATTACKER = 0
 let COLLECTOR = 1

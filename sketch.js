@@ -13,7 +13,11 @@ function setup() {
 
   // show some information every second in the console
   setInterval(
-    function() { console.clear(); console.log('Fps:', Math.round(frameRate())) },
+    function() {
+      console.clear()
+      console.log('Fps:', Math.round(frameRate()))
+      env.print_state()
+    },
     1000
   )
 }
