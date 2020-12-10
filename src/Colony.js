@@ -5,17 +5,32 @@ var Colony = function(color, numBee, lifeBee, hivePos) {
   this.numBee   = numBee
   this.lifeBee  = lifeBee
   this.hivePos  = hivePos
-  this.sep      = SEP_MULTIPLIER
-  this.ali      = ALI_MULTIPLIER
-  this.coh      = COH_MULTIPLIER
-  this.sen      = SEN_MULTIPLIER
-  this.mem      = SEN_MULTIPLIER
-  this.wan      = WAN_MULTIPLIER
-  this.atk      = ATK_MULTIPLIER
-  this.beeDist  = NEIGHBOR_DIST
-  this.beeAngle = NEIGHBOR_ANGLE
   this.food     = 0
   this.reset()
+}
+
+Colony.prototype._genBee = function(sep, ali, coh, sen, mem, wan, atk, dist, angle, type) {
+  return new Bee(
+    this.color,
+    this.lifeBee,
+    this.hivePos,
+    new ColonyParams(sep, ali, coh, sen, mem, wan, atk, dist, angle, type)
+  )
+}
+
+Colony.prototype.genBee = function() {
+  return this._genBee(
+    SEP_MULTIPLIER,
+    ALI_MULTIPLIER,
+    COH_MULTIPLIER,
+    SEN_MULTIPLIER,
+    SEN_MULTIPLIER,
+    WAN_MULTIPLIER,
+    ATK_MULTIPLIER,
+    NEIGHBOR_DIST,
+    NEIGHBOR_ANGLE,
+    COLLECTOR
+  )
 }
 
 Colony.prototype.reset = function() {
@@ -23,7 +38,7 @@ Colony.prototype.reset = function() {
   this.food     = 0
 
   for (let i = 0; i < this.numBee; i++) {
-    this.currBees.push(new Bee(this))
+    this.currBees.push(this.genBee())
   }
 }
 
@@ -59,7 +74,7 @@ Colony.prototype.removeDeath = function() {
 }
 
 Colony.prototype.giveBirth = function() {
-  for (; this.food >= NEW_BEE_COST; this.currBees.push(new Bee(this)), this.food -= NEW_BEE_COST);
+  for (; this.food >= NEW_BEE_COST; this.currBees.push(this.genBee()), this.food -= NEW_BEE_COST);
 }
 
 Colony.prototype.update = function(flowers) {
@@ -86,4 +101,17 @@ Colony.prototype.draw = function() {
   noStroke()
   ellipsoid(100, 200, 100)
   pop()
+}
+
+var ColonyParams = function(sep, ali, coh, sen, mem, wan, atk, dist, angle, type) {
+  this.sep      = sep
+  this.ali      = ali
+  this.coh      = coh
+  this.sen      = sen
+  this.mem      = mem
+  this.wan      = wan
+  this.atk      = atk
+  this.beeDist  = dist
+  this.beeAngle = angle
+  this.type     = type
 }

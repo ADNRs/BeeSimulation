@@ -34,6 +34,8 @@ class Environment {
   foods_init() {
     let P = [0xFF, 0xA0, 0xA0]
     let G = [0xB9, 0xC4, 0x06]
+    let PURPLE = [0x52, 0x2E, 0x75]
+    let DB = [0x01, 0x21, 0x72]
     let numFlower = 10
     let lifeFlower = 1
 
@@ -44,6 +46,14 @@ class Environment {
     this.flowersGroup.push(
       new Flowers(G, numFlower, lifeFlower, [WIDTH/2 - 0.15*WIDTH, -DEPTH/2 + 0.15*WIDTH], 0.1*WIDTH, 1)
     )
+
+    // this.flowersGroup.push(
+    //   new Flowers(PURPLE, numFlower, lifeFlower, [-WIDTH/2 + 0.15*WIDTH, -DEPTH/2 + 0.15*WIDTH], 0.1*WIDTH, 1)
+    // )
+    //
+    // this.flowersGroup.push(
+    //   new Flowers(DB, numFlower, lifeFlower, [WIDTH/2 - 0.15*WIDTH, 0 - 0.15*WIDTH], 0.1*WIDTH, 1)
+    // )
   }
 
   reset() {
