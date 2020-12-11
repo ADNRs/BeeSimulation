@@ -17,6 +17,9 @@ function setup() {
       console.clear()
       console.log('Fps:', Math.round(frameRate()))
       env.print_state()
+      if (frameRate() < 20) {
+        env.reset()
+      }
     },
     1000
   )
