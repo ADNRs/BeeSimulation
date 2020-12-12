@@ -1,5 +1,5 @@
 class Bee {
-  constructor(color, life, hivePos, colonyParams) {
+  constructor(color, life, hivePos, id, colonyParams) {
     this.position     = new p5.Vector(hivePos.x, hivePos.y, hivePos.z)
     this.velocity     = p5.Vector.random3D()
     this.color        = color
@@ -8,6 +8,7 @@ class Bee {
     this.colonyParams = colonyParams
     this.gotFood      = false
     this.prevPos
+    this.id           = id
     this.velocity.setMag(VEL_LIMIT) // set the magnitude of velocity to VEL_LIMIT
   }
 
@@ -67,15 +68,17 @@ class Bee {
   _sense(foods) {
     let velocity = createVector(0, 0, 0)
     let bestDist = SEN_DIST
+    let getVectorsAngle = function(v1, v2) { return acos(v1.dot(v2) / (v1.mag() * v2.mag())) }
 
     if (this.colonyParams.type == COLLECTOR) {
       if (!this.gotFood) {
         for (let food of foods) {
-            if (this.position.dist(food.position) < bestDist) {
-              bestDist = this.position.dist(food.position)
-              velocity = p5.Vector.sub(food.position, this.position)
-            }
+          let angle = getVectorsAngle(this.velocity, p5.Vector.sub(food.position, this.position))
+          if (this.position.dist(food.position) < bestDist && angle < this.colonyParams.angle) {
+            bestDist = this.position.dist(food.position)
+            velocity = p5.Vector.sub(food.position, this.position)
           }
+        }
       }
     }
 
@@ -106,13 +109,15 @@ class Bee {
   _attack(enemies) {
     let velocity = createVector(0, 0, 0)
     let bestDist = ATK_DIST
+    let getVectorsAngle = function(v1, v2) { return acos(v1.dot(v2) / (v1.mag() * v2.mag())) }
 
     if (this.colonyParams.type == ATTACKER) {
       for (let enemy of enemies) {
-          if (this.position.dist(enemy.position) < bestDist) {
-            bestDist = this.position.dist(enemy.position)
-            velocity = p5.Vector.sub(enemy.position, this.position)
-          }
+        let angle = getVectorsAngle(this.velocity, p5.Vector.sub(enemy.position, this.position))
+        if (this.position.dist(enemy.position) < bestDist && angle < this.colonyParams.angle) {
+          bestDist = this.position.dist(enemy.position)
+          velocity = p5.Vector.sub(enemy.position, this.position)
+        }
       }
     }
 

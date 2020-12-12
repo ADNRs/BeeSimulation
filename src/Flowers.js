@@ -10,7 +10,7 @@ class Flowers {
   }
 
   genFlower() {
-    let position = createVector(this.center[0], random(HEIGHT/3.5, HEIGHT/2.5), this.center[1])
+    let position = createVector(this.center[0], random(HEIGHT/5, HEIGHT/3), this.center[1])
     position.x = position.x + random(-1, 1)*this.radius
     position.z = position.z + random(-1, 1)*this.radius
     return new Flower(this.color, this.lifeFlower, position)
