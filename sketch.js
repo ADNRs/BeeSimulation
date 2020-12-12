@@ -12,14 +12,14 @@ function setup() {
   env.reset()
 
   // show some information every second in the console
-  setInterval(
-    function() {
-      console.clear()
-      console.log('Fps:', Math.round(frameRate()))
-      env.print_state()
-    },
-    1000
-  )
+  // setInterval(
+  //   function() {
+  //     console.clear()
+  //     console.log('Fps:', Math.round(frameRate()))
+  //     env.print_state()
+  //   },
+  //   1000
+  // )
 }
 
 function mousePressed() {

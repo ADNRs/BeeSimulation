@@ -178,14 +178,15 @@ class Environment {
       this.frameCount = 0
       this.generation += 1
       this.reset()
+      this.print_state()
     }
   }
 
   print_state() {
+    console.log('Gen: ' + str(this.generation))
     for (let i = 0; i < this.colonies.length; i++) {
-      console.log('Gen ' + str(this.generation))
       console.log('Colony ' + str(i) + ': ' + this.colonies[i].currBees.length)
-      console.log(this.colonies[i].chromosomes[0])
+      console.log(...this.colonies[i].chromosomes[0])
     }
   }
 }

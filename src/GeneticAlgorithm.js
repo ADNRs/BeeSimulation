@@ -33,7 +33,6 @@ class GeneticAlgorithm {
       let record = this.records[i].get()
       fitness.push(this.fitnessFunction(record.kill, record.collect))
     }
-    console.log(fitness)
     for (let i = 0; i < this.chromosomeNum; i++) {
       let opponent = this.helper.randInt(0, this.chromosomeNum)
       if (fitness[i] == 0 && fitness[opponent] == 0) {
