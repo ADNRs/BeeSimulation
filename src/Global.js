@@ -2,11 +2,11 @@ let WIDTH
 let HEIGHT
 let DEPTH
 
-let BEE_NUM = 10
-let FLOWER_NUM = 10
+let BEE_NUM = 40
+let FLOWER_NUM = 50
 
 let BEE_LIFE = 1500
-let FLOWER_LIFE = 50
+let FLOWER_LIFE = 10
 
 let ATK_RATE = 0.2
 
@@ -24,10 +24,10 @@ let ATK = 0.8
 let DIST = 100
 let ANGLE = 120
 
-let ATK_DMG = 500
+let ATK_DMG = 50
 
 let SEN_DIST = 200
-let ATK_DIST = 500
+let ATK_DIST = 800
 let CHK_DIST = 20
 
 let ATTACKER = 0

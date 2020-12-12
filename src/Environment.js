@@ -2,8 +2,17 @@ class Environment {
   constructor() {
     this.colonies = new Array()
     this.flowersGroup = new Array()
+    this.ga = new Array()
+    this.ga_init()
     this.colonies_init()
     this.foods_init()
+    this.frameCount = 0
+    this.generation = 0
+  }
+
+  ga_init() {
+    this.ga.push(new GeneticAlgorithm(CHROMOSOME_NUM))
+    this.ga.push(new GeneticAlgorithm(CHROMOSOME_NUM))
   }
 
   colonies_init() {
@@ -11,13 +20,28 @@ class Environment {
     let R = [0xFF, 0x00, 0x00]
     let O = [0xD7, 0x54, 0x04]
     let W = [0xFF, 0xFF, 0xFF]
-
     this.colonies.push(
-      new Colony(Y, BEE_NUM, BEE_LIFE, createVector(-WIDTH/2, -HEIGHT/2, 0), ATK_RATE)
+      new Colony(
+        Y,
+        BEE_NUM,
+        BEE_LIFE,
+        createVector(-WIDTH/2, -HEIGHT/2, 0),
+        ATK_RATE,
+        this.ga[0].chromosomes,
+        this.ga[0].records
+      )
     )
 
     this.colonies.push(
-      new Colony(R, BEE_NUM, BEE_LIFE, createVector(WIDTH/2, -HEIGHT/2, -DEPTH/2), ATK_RATE)
+      new Colony(
+        R,
+        BEE_NUM,
+        BEE_LIFE,
+        createVector(WIDTH/2, -HEIGHT/2, -DEPTH/2),
+        ATK_RATE,
+        this.ga[1].chromosomes,
+        this.ga[1].records
+      )
     )
 
     // this.colonies.push(
@@ -106,6 +130,9 @@ class Environment {
         let searchCuboid = new Cuboid(bee.position, new p5.Vector(CHK_DIST, CHK_DIST, CHK_DIST))
         for (let otherBee of beeOctree.search(searchCuboid)) {
           otherBee.life -= ATK_DMG
+          if (otherBee.life <= 0) {
+            this.colonies[i].records[bee.id].kill += 1
+          }
           break
         }
       }
@@ -117,9 +144,9 @@ class Environment {
     }
 
     // rebalance
-    // for (let colony of this.colonies) {
-    //   colony.rebalance()
-    // }
+    for (let colony of this.colonies) {
+      colony.rebalance()
+    }
 
     // give birth
     for (let cluster of this.colonies.concat(this.flowersGroup)) {
@@ -140,14 +167,25 @@ class Environment {
       }
       this.colonies[i].update(flora, otherBees)
     }
+
+
+    this.frameCount += 1
+    if (this.frameCount == FITNESS_INTERVAL) {
+      for (let i = 0; i < this.ga.length; i++) {
+        this.ga[i].evaluate()
+        this.colonies[i].chromosomes = this.ga[i].chromosomes
+      }
+      this.frameCount = 0
+      this.generation += 1
+      this.reset()
+    }
   }
 
   print_state() {
-    let msg = ''
     for (let i = 0; i < this.colonies.length; i++) {
-      msg += 'Colony ' + str(i) + ': ' + this.colonies[i].currBees.length + ', '
+      console.log('Gen ' + str(this.generation))
+      console.log('Colony ' + str(i) + ': ' + this.colonies[i].currBees.length)
+      console.log(this.colonies[i].chromosomes[0])
     }
-    msg = msg.slice(0, msg.length-2)
-    console.log(msg)
   }
 }

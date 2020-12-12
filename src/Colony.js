@@ -1,5 +1,5 @@
 class Colony {
-  constructor(color, numBee, lifeBee, hivePos, atkRate) {
+  constructor(color, numBee, lifeBee, hivePos, atkRate, chromosomes, records) {
     this.currBees
     this.attackers
     this.collectors
@@ -10,14 +10,18 @@ class Colony {
     this.hivePos = hivePos
     this.atkRate = atkRate
     this.food    = 0
+    this.chromosomes = chromosomes
+    this.records = records
+    this.currIdx = -1
     this.reset()
   }
 
-  _genBee(sep, ali, coh, sen, mem, wan, atk, dist, angle) {
+  _genBee(id, sep, ali, coh, sen, mem, wan, atk, dist, angle) {
     return new Bee(
       this.color,
       this.lifeBee,
       this.hivePos,
+      id,
       new ColonyParams(
         sep, ali, coh, sen, mem, wan, atk, dist, angle, this.attackers.length < this.currBees.length*this.atkRate ? ATTACKER : COLLECTOR
       )
@@ -25,7 +29,12 @@ class Colony {
   }
 
   genBee() {
-    return this._genBee(SEP, ALI, COH, SEN, MEM, WAN, ATK, DIST, ANGLE)
+    this.currIdx += 1
+    if (this.currIdx == this.chromosomes.length) {
+      this.currIdx = 0
+    }
+    let chromosome = this.chromosomes[this.currIdx]
+    return this._genBee(this.currIdx, ...chromosome)
   }
 
   reset() {
@@ -51,9 +60,9 @@ class Colony {
       if (bee.position.dist(this.hivePos) < CHK_DIST) {
         if (bee.gotFood) {
           this.food += 1
+          this.records[bee.id].collect += 1
+          bee.gotFood = false
         }
-
-        bee.gotFood = false
       }
     }
   }
