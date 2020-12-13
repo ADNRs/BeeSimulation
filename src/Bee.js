@@ -140,7 +140,7 @@ class Bee {
     vMem.setMag(VEL_LIMIT)
     vWan.setMag(VEL_LIMIT) // set the magnitude of the velocity of wander to VEL_LIMIT
     vAtk.setMag(VEL_LIMIT) // set the magnitude of the velocity of attack to VEL_LIMIT
-    this.velocity.add(p5.Vector.mult(vSen, this.colonyParams.sep))
+    this.velocity.add(p5.Vector.mult(vSep, this.colonyParams.sep))
     this.velocity.add(p5.Vector.mult(vAli, this.colonyParams.ali))
     this.velocity.add(p5.Vector.mult(vCoh, this.colonyParams.coh))
     this.velocity.add(p5.Vector.mult(vSen, this.colonyParams.sen))
