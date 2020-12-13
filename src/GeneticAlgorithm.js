@@ -1,8 +1,8 @@
 let FITNESS_INTERVAL = 1200
 let KILL_SCORE = 20
 let COLLECT_SCORE = 3
-let CHROMOSOME_NUM = 10
-let RECOMBINATION_RATE = 0.2
+let CHROMOSOME_NUM = 20
+let RECOMBINATION_RATE = 1
 let MUTATION_RATE = 0.1
 
 class GeneticAlgorithm {
@@ -11,6 +11,7 @@ class GeneticAlgorithm {
     this.chromosomes = new Array()
     this.records = new Array()
     this.helper = new GeneticAlgorithmHelper()
+    this.bestChromosome
 
     for (let i = 0; i < chromosomeNum; i++) {
       this.chromosomes.push(this.helper.getChromosome())
@@ -27,20 +28,25 @@ class GeneticAlgorithm {
   }
 
   select() {
-    let fitness = new Array()
+    let fitnesses = new Array()
     let newChromosomes = new Array()
+    let bestFitness = -Infinity
     for (let i = 0; i < this.chromosomes.length; i++) {
       let record = this.records[i].get()
-      fitness.push(this.fitnessFunction(record.kill, record.collect))
+      let fitness = this.fitnessFunction(record.kill, record.collect)
+      fitnesses.push(fitness)
+      if (fitness > bestFitness) {
+        this.bestChromosome = this.chromosomes[i]
+      }
     }
-    for (let i = 0; i < this.chromosomeNum; i++) {
-      let opponent = this.helper.randInt(0, this.chromosomeNum)
-      if (fitness[i] == 0 && fitness[opponent] == 0) {
+    for (let i = 0; i < this.chromosomes.length; i++) {
+      let opponent = i + 1 < this.helper.param.length ? i + 1 : 0
+      if (fitnesses[i] == 0 && fitnesses[opponent] == 0) {
         newChromosomes.push(this.helper.getChromosome())
       }
       else {
         newChromosomes.push(
-          fitness[i] > fitness[opponent] ? this.chromosomes[i] : this.chromosomes[opponent]
+          fitnesses[i] > fitnesses[opponent] ? this.chromosomes[i] : this.chromosomes[opponent]
         )
       }
     }
@@ -53,8 +59,8 @@ class GeneticAlgorithm {
       if (Math.random() > RECOMBINATION_RATE) {
         continue
       }
-      let start = this.helper.randInt(0, this.chromosomeNum)
-      let end   = this.helper.randInt(start, this.chromosomeNum)
+      let start = this.helper.randInt(0, this.helper.param.length)
+      let end   = this.helper.randInt(start, this.helper.param.length)
       for (let j = start; j < end; j++) {
         let temp = newChromosomes[i][j]
         newChromosomes[i][j] = newChromosomes[i+1][j]
@@ -85,15 +91,15 @@ class GeneticAlgorithm {
 class GeneticAlgorithmHelper {
   constructor() {
     this.param = [
-      ['sep',   'float', -1,   1],
-      ['ali',   'float', -1,   1],
-      ['coh',   'float', -1,   1],
-      ['sen',   'float', -1,   1],
-      ['mem',   'float', -1,   1],
-      ['wan',   'float',  0,   1],
-      ['atk',   'float', -1,   1],
-      ['dist',  'float', DIST, DIST],
-      ['angle', 'float', 0,  180]
+      ['sep',   'float', -.3, .3],
+      ['ali',   'float', -.3, .3],
+      ['coh',   'float', -.3, .3],
+      ['sen',   'float', -.3, .3],
+      ['mem',   'float', -.3, .3],
+      ['wan',   'float', -.3, .3],
+      ['atk',   'float', -.3, .3],
+      ['dist',  'float', 50, 300],
+      ['angle', 'float', 10, 180]
     ]
   }
 

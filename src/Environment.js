@@ -67,6 +67,10 @@ class Environment {
       new Flowers(G, FLOWER_NUM, FLOWER_LIFE, [WIDTH/2 - 0.15*WIDTH, -DEPTH/2 + 0.15*WIDTH], 0.1*WIDTH, FLOWER_PROB)
     )
 
+    this.flowersGroup.push(
+      new Flowers(PURPLE, FLOWER_NUM, FLOWER_LIFE, [0, -DEPTH/4], 0.1*WIDTH, FLOWER_PROB)
+    )
+
     // this.flowersGroup.push(
     //   new Flowers(PURPLE, numFlower, lifeFlower, [-WIDTH/2 + 0.15*WIDTH, -DEPTH/2 + 0.15*WIDTH], 0.1*WIDTH, 1)
     // )
@@ -168,7 +172,6 @@ class Environment {
       this.colonies[i].update(flora, otherBees)
     }
 
-
     this.frameCount += 1
     if (this.frameCount == FITNESS_INTERVAL) {
       for (let i = 0; i < this.ga.length; i++) {
@@ -177,8 +180,8 @@ class Environment {
       }
       this.frameCount = 0
       this.generation += 1
-      this.reset()
       this.print_state()
+      this.reset()
     }
   }
 
@@ -186,7 +189,7 @@ class Environment {
     console.log('Gen: ' + str(this.generation))
     for (let i = 0; i < this.colonies.length; i++) {
       console.log('Colony ' + str(i) + ': ' + this.colonies[i].currBees.length)
-      console.log(...this.colonies[i].chromosomes[0])
+      console.log(...this.ga[i].bestChromosome)
     }
   }
 }

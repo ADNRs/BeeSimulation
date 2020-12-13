@@ -10,7 +10,7 @@ let FLOWER_LIFE = 10
 
 let ATK_RATE = 0.2
 
-let BEE_COST = 1
+let BEE_COST = 2
 let FLOWER_PROB = 0
 
 let VEL_LIMIT = 8 // limit of velocity
@@ -26,8 +26,8 @@ let ANGLE = 120
 
 let ATK_DMG = 50
 
-let SEN_DIST = 200
-let ATK_DIST = 800
+let SEN_DIST = 2000
+let ATK_DIST = 2000
 let CHK_DIST = 20
 
 let ATTACKER = 0
