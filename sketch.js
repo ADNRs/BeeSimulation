@@ -2,7 +2,7 @@ function setup() {
   // set width, height, and depth according to the browser
   WIDTH = windowWidth
   HEIGHT = windowHeight
-  DEPTH = WIDTH + HEIGHT
+  DEPTH = 3000
   env = new Environment()
 
   // initial setup for drawing
@@ -12,18 +12,24 @@ function setup() {
   env.reset()
 
   // show some information every second in the console
-  setInterval(
-    function() {
-      console.clear()
-      console.log('Fps:', Math.round(frameRate()))
-      env.print_state()
-    },
-    1000
-  )
+  // setInterval(
+  //   function() {
+  //     console.clear()
+  //     console.log('Fps:', Math.round(frameRate()))
+  //     env.print_state()
+  //   },
+  //   1000
+  // )
 }
 
 function mousePressed() {
-  env.reset()
+  // env.reset()
+  if (isLooping()) {
+    noLoop()
+  }
+  else {
+    loop()
+  }
 }
 
 function draw() {
