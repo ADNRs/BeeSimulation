@@ -4,6 +4,7 @@ class Bee {
     this.velocity     = p5.Vector.random3D()
     this.color        = color
     this.life         = life
+    this.life_max     = life
     this.hivePos      = hivePos
     this.colonyParams = colonyParams
     this.gotFood      = false
@@ -22,7 +23,7 @@ class Bee {
     for (let bee of bees) {
       let testDist = getPointsDist(this.position, bee.position)
       let testAngle = getVectorsAngle(this.velocity, p5.Vector.sub(bee.position, this.position))
-      if (testDist < this.colonyParams.dist && testAngle < this.colonyParams.angle) {
+      if (bee.id == this.id && testDist < this.colonyParams.dist && testAngle < this.colonyParams.angle) {
         neighbors.push(bee)
       }
     }
@@ -179,8 +180,12 @@ class Bee {
   draw() {
     push()
     translate(this.position)
-    fill(this.color)
     noStroke()
+    fill([0xFF, 0xFF, 0xFF])
+    rect(-20, -30, 40, 10)
+    fill([0xD7, 0x54, 0x04])
+    rect(-20, -30, 40*this.life/this.life_max, 10)
+    fill(this.color)
     sphere(12)
     pop()
   }
