@@ -2,7 +2,7 @@ let FITNESS_INTERVAL = 1200
 let KILL_SCORE = 20
 let COLLECT_SCORE = 3
 let CHROMOSOME_NUM = 20
-let RECOMBINATION_RATE = 1
+let RECOMBINATION_RATE = 0.5
 let MUTATION_RATE = 0.1
 
 class GeneticAlgorithm {
@@ -40,7 +40,7 @@ class GeneticAlgorithm {
       }
     }
     for (let i = 0; i < this.chromosomes.length; i++) {
-      let opponent = i + 1 < this.helper.param.length ? i + 1 : 0
+      let opponent = i + 1 != this.chromosomes.length ? i + 1 : 0
       if (fitnesses[i] == 0 && fitnesses[opponent] == 0) {
         newChromosomes.push(this.helper.getChromosome())
       }
@@ -50,7 +50,6 @@ class GeneticAlgorithm {
         )
       }
     }
-
     return newChromosomes
   }
 
@@ -59,9 +58,9 @@ class GeneticAlgorithm {
       if (Math.random() > RECOMBINATION_RATE) {
         continue
       }
-      let start = this.helper.randInt(0, this.helper.param.length)
-      let end   = this.helper.randInt(start, this.helper.param.length)
-      for (let j = start; j < end; j++) {
+      let start = this.helper.randInt(0, this.helper.param.length-1)
+      let end   = this.helper.randInt(start, this.helper.param.length-1)
+      for (let j = start; j <= end; j++) {
         let temp = newChromosomes[i][j]
         newChromosomes[i][j] = newChromosomes[i+1][j]
         newChromosomes[i+1][j] = temp
@@ -91,13 +90,13 @@ class GeneticAlgorithm {
 class GeneticAlgorithmHelper {
   constructor() {
     this.param = [
-      ['sep',   'float',  0, .3],
-      ['ali',   'float',  0, .3],
-      ['coh',   'float',  0, .3],
-      ['sen',   'float',  0, .3],
-      ['mem',   'float',  0, .3],
-      ['wan',   'float',  0, .3],
-      ['atk',   'float',  0, .3],
+      ['sep',   'float',  0,   1],
+      ['ali',   'float',  0,   1],
+      ['coh',   'float',  0,   1],
+      ['sen',   'float',  0,   1],
+      ['mem',   'float',  0,   1],
+      ['wan',   'float',  0,   1],
+      ['atk',   'float',  0,   1],
       ['dist',  'float', 50, 300],
       ['angle', 'float', 10, 180]
     ]
