@@ -16,13 +16,12 @@ class Environment {
   }
 
   colonies_init() {
-    let Y = [0xF2, 0xA1, 0x04]
-    let R = [0xFF, 0x00, 0x00]
-    let O = [0xD7, 0x54, 0x04]
-    let W = [0xFF, 0xFF, 0xFF]
+    let YELLOW = [0xF2, 0xA1, 0x04]
+    let ORANGE = [0xD7, 0x54, 0x04]
+    let RED    = [0xFF, 0x00, 0x00]
     this.colonies.push(
       new Colony(
-        Y,
+        YELLOW,
         BEE_NUM,
         BEE_LIFE,
         createVector(-WIDTH/2, -HEIGHT/2, 0),
@@ -34,7 +33,7 @@ class Environment {
 
     this.colonies.push(
       new Colony(
-        R,
+        RED,
         BEE_NUM,
         BEE_LIFE,
         createVector(WIDTH/2, -HEIGHT/2, -DEPTH/2),
@@ -43,14 +42,6 @@ class Environment {
         this.ga[1].records
       )
     )
-
-    // this.colonies.push(
-    //   new Colony(O, BEE_NUM, BEE_LIFE, createVector(-WIDTH/2, -HEIGHT/2, -DEPTH/2), ATK_RATE)
-    // )
-    //
-    // this.colonies.push(
-    //   new Colony(W, BEE_NUM, BEE_LIFE, createVector(WIDTH/2, -HEIGHT/2, 0), ATK_RATE)
-    // )
   }
 
   foods_init() {
