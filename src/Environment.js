@@ -7,6 +7,7 @@ class Environment {
     this.colonies_init()
     this.foods_init()
     this.frameCount = 0
+    this.round      = 0
     this.generation = 0
   }
 
@@ -63,11 +64,11 @@ class Environment {
     )
 
     // this.flowersGroup.push(
-    //   new Flowers(PURPLE, numFlower, lifeFlower, [-WIDTH/2 + 0.15*WIDTH, -DEPTH/2 + 0.15*WIDTH], 0.1*WIDTH, 1)
+    //   new Flowers(PURPLE, FLOWER_NUM, FLOWER_LIFE, [-WIDTH/2 + 0.15*WIDTH, -DEPTH/2 + 0.15*WIDTH], 0.1*WIDTH, 1)
     // )
     //
     // this.flowersGroup.push(
-    //   new Flowers(DB, numFlower, lifeFlower, [WIDTH/2 - 0.15*WIDTH, 0 - 0.15*WIDTH], 0.1*WIDTH, 1)
+    //   new Flowers(DB, FLOWER_NUM, FLOWER_LIFE, [WIDTH/2 - 0.15*WIDTH, 0 - 0.15*WIDTH], 0.1*WIDTH, 1)
     // )
   }
 
@@ -165,13 +166,17 @@ class Environment {
 
     this.frameCount += 1
     if (this.frameCount == FITNESS_INTERVAL) {
-      for (let i = 0; i < this.ga.length; i++) {
-        this.ga[i].evaluate()
-        this.colonies[i].chromosomes = this.ga[i].chromosomes
+      this.round += 1
+      if (this.round == 3) {
+        for (let i = 0; i < this.ga.length; i++) {
+          this.ga[i].evaluate()
+          this.colonies[i].chromosomes = this.ga[i].chromosomes
+        }
+        this.round = 0
+        this.generation += 1
+        this.print_state()
       }
       this.frameCount = 0
-      this.generation += 1
-      this.print_state()
       this.reset()
     }
   }
