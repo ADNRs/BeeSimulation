@@ -91,13 +91,13 @@ class GeneticAlgorithm {
 class GeneticAlgorithmHelper {
   constructor() {
     this.param = [
-      ['sep',   'float', -.3, .3],
-      ['ali',   'float', -.3, .3],
-      ['coh',   'float', -.3, .3],
-      ['sen',   'float', -.3, .3],
-      ['mem',   'float', -.3, .3],
-      ['wan',   'float', -.3, .3],
-      ['atk',   'float', -.3, .3],
+      ['sep',   'float',  0, .3],
+      ['ali',   'float',  0, .3],
+      ['coh',   'float',  0, .3],
+      ['sen',   'float',  0, .3],
+      ['mem',   'float',  0, .3],
+      ['wan',   'float',  0, .3],
+      ['atk',   'float',  0, .3],
       ['dist',  'float', 50, 300],
       ['angle', 'float', 10, 180]
     ]
