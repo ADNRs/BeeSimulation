@@ -167,7 +167,7 @@ class Environment {
     this.frameCount += 1
     if (this.frameCount == FITNESS_INTERVAL) {
       this.round += 1
-      if (this.round == 3) {
+      if (this.round == 1) {
         for (let i = 0; i < this.ga.length; i++) {
           this.ga[i].evaluate()
           this.colonies[i].chromosomes = this.ga[i].chromosomes
