@@ -1,9 +1,9 @@
 let FITNESS_INTERVAL = 1200
 let KILL_SCORE = 20
 let COLLECT_SCORE = 3
-let CHROMOSOME_NUM = 20
+let CHROMOSOME_NUM = 8
 let RECOMBINATION_RATE = 0.5
-let MUTATION_RATE = 0.1
+let MUTATION_RATE = 0.5
 
 class GeneticAlgorithm {
   constructor(chromosomeNum) {
@@ -73,7 +73,7 @@ class GeneticAlgorithm {
     for (let chromosome of newChromosomes) {
       for (let i = 0; i < 9; i++) {
         if (Math.random() < MUTATION_RATE) {
-          chromosome[i] += this.helper.getChromosomeMutation(i)
+          chromosome[i] = this.helper.getChromosomeMutation(i)
           if (chromosome[i] < this.helper.param[i][2]) {
             chromosome[i] = this.helper.param[i][2]
           }
@@ -123,7 +123,7 @@ class GeneticAlgorithmHelper {
   }
 
   getChromosomeMutation(i) {
-    return this.randFloat(-1, 1) * (this.param[i][3] - this.param[i][2]) * 0.1
+    return this.randFloat(this.param[i][2], this.param[i][3])
   }
 }
 
