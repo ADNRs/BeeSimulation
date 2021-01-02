@@ -2,6 +2,7 @@ let FITNESS_INTERVAL = 1200
 let KILL_SCORE = 20
 let COLLECT_SCORE = 3
 let CHROMOSOME_NUM = 8
+let SELECT_RATE = 0.1
 let RECOMBINATION_RATE = 0.5
 let MUTATION_RATE = 0.5
 
@@ -46,7 +47,7 @@ class GeneticAlgorithm {
       }
       else {
         newChromosomes.push(
-          fitnesses[i] > fitnesses[opponent] ? this.chromosomes[i] : this.chromosomes[opponent]
+          fitnesses[i] > fitnesses[opponent] || SELECT_RATE >= Math.random() ? this.chromosomes[i] : this.chromosomes[opponent]
         )
       }
     }
