@@ -5,7 +5,7 @@ let DEPTH
 let BEE_NUM = 40
 let FLOWER_NUM = 50
 
-let BEE_LIFE = 1000
+let BEE_LIFE = 1200
 let FLOWER_LIFE = 10
 
 let ATK_RATE = 0.2
