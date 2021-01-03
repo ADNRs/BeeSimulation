@@ -1,5 +1,5 @@
 # BeeSimulation
-BeeSimulation allows users to perform a simple bee simulation. Please read release notes for choosing the version that fits your needs the best.
+BeeSimulation allows users to perform a simple bee simulation. Please read the release notes for choosing the version that fits your needs the best.
 
 ## Setup
 + web browser
